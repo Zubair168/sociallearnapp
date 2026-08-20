@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sociallearnapp/core/constants/app_colors.dart';
 import 'package:sociallearnapp/core/constants/app_text_styles.dart';
@@ -72,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ── Blue header with illustration ──────────────────────────
+            // ── Blue header with actual illustration ───────────────────
             Container(
               height: size.height * 0.36,
               width: double.infinity,
@@ -81,16 +82,16 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: Stack(
                 children: [
-                  // Decorative blobs
+                  // Decorative circles
                   Positioned(
                     top: -40,
                     right: -40,
                     child: Container(
                       width: 160,
                       height: 160,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.08),
+                        color: Color(0x14FFFFFF),
                       ),
                     ),
                   ),
@@ -100,50 +101,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       width: 100,
                       height: 100,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.06),
+                        color: Color(0x0FFFFFFF),
                       ),
                     ),
                   ),
-                  // Illustration
+                  // Actual Illustration from Design
                   Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 40),
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: const Icon(
-                            Icons.auto_stories_rounded,
-                            color: Colors.white,
-                            size: 56,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'LearnHub',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                        const Text(
-                          'Your Learning Journey Starts Here',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: SvgPicture.asset(
+                        'assets/images/Studying-bro 1.svg',
+                        height: 200,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1),
                 ],

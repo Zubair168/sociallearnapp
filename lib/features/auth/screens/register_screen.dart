@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:sociallearnapp/core/constants/app_colors.dart';
 import 'package:sociallearnapp/core/constants/app_text_styles.dart';
@@ -64,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             // ── Blue header ────────────────────────────────────────────
             Container(
-              height: size.height * 0.28,
+              height: size.height * 0.32,
               width: double.infinity,
               decoration: const BoxDecoration(color: AppColors.primary),
               child: Stack(
@@ -75,9 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Container(
                       width: 140,
                       height: 140,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.08),
+                        color: Color(0x14FFFFFF),
                       ),
                     ),
                   ),
@@ -101,28 +102,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   color: Colors.white, size: 20),
                             ),
                           ),
-                          const Spacer(),
-                          Container(
-                            width: 56,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Icon(Icons.person_add_rounded,
-                                color: Colors.white, size: 30),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Create Account',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Poppins',
+                          Center(
+                            child: SvgPicture.asset(
+                              'assets/images/Book lover-bro 1.svg',
+                              height: 150,
+                              fit: BoxFit.contain,
                             ),
                           ),
-                          const SizedBox(height: 16),
                         ],
                       ),
                     ),

@@ -17,6 +17,7 @@ dependencies:
   smooth_page_indicator: ^1.2.0
   cached_network_image: ^3.4.1
   flutter_animate: ^4.5.0
+  flutter_svg: ^2.0.17
 
   # State management
   provider: ^6.1.2

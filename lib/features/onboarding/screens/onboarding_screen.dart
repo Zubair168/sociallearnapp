@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:sociallearnapp/core/constants/app_colors.dart';
 import 'package:sociallearnapp/core/constants/app_text_styles.dart';
@@ -271,84 +272,19 @@ class _OnboardingPage extends StatelessWidget {
   }
 }
 
-// ─── Illustrations ─────────────────────────────────────────────────────────
+// ─── Real SVG Illustrations from Design ───────────────────────────────────
 
 class _OnboardingIllustration1 extends StatelessWidget {
   const _OnboardingIllustration1();
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 260,
-      height: 260,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background circle
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.15),
-            ),
-          ),
-          // Teacher at board icon
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.school_rounded,
-                  color: Colors.white,
-                  size: 48,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Small course cards
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _miniCard(Icons.play_circle_rounded, 'Video'),
-                  const SizedBox(width: 8),
-                  _miniCard(Icons.menu_book_rounded, 'Courses'),
-                  const SizedBox(width: 8),
-                  _miniCard(Icons.star_rounded, 'Rated'),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _miniCard(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: Colors.white, size: 20),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 9,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 8),
+      child: SvgPicture.asset(
+        'assets/images/Book lover-bro 1.svg',
+        height: 240,
+        fit: BoxFit.contain,
       ),
     );
   }
@@ -359,64 +295,12 @@ class _OnboardingIllustration2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 260,
-      height: 260,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.15),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.play_lesson_rounded,
-                  color: Colors.white,
-                  size: 52,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check_circle_rounded,
-                        color: Colors.white, size: 16),
-                    SizedBox(width: 6),
-                    Text(
-                      'Enrolled Successfully!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 8),
+      child: SvgPicture.asset(
+        'assets/images/Attached files-bro (1) 1.svg',
+        height: 240,
+        fit: BoxFit.contain,
       ),
     );
   }
@@ -427,79 +311,12 @@ class _OnboardingIllustration3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 260,
-      height: 260,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 200,
-            height: 200,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.15),
-            ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(
-                  Icons.trending_up_rounded,
-                  color: Colors.white,
-                  size: 52,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Progress bar
-              Container(
-                width: 160,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Progress',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500)),
-                        const Text('75%',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700)),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: 0.75,
-                        backgroundColor: Colors.white.withOpacity(0.3),
-                        valueColor:
-                            const AlwaysStoppedAnimation<Color>(Colors.white),
-                        minHeight: 6,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 8),
+      child: SvgPicture.asset(
+        'assets/images/Studying-bro 1.svg',
+        height: 240,
+        fit: BoxFit.contain,
       ),
     );
   }
