@@ -21,7 +21,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
   bool _obscurePass = true;
-  bool _obscureConfirm = true;
 
   @override
   void dispose() {
@@ -56,134 +55,165 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
-    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
+      backgroundColor: AppColors.primary,
+      body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
-            // ── Blue header ────────────────────────────────────────────
-            Container(
-              height: size.height * 0.32,
-              width: double.infinity,
-              decoration: const BoxDecoration(color: AppColors.primary),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: -30,
-                    right: -30,
-                    child: Container(
-                      width: 140,
-                      height: 140,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0x14FFFFFF),
+            // ── Top Blue Header with Illustration ────────────────────────
+            Expanded(
+              flex: 3,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Stack(
+                  children: [
+                    // Back button
+                    Positioned(
+                      top: 10,
+                      left: 0,
+                      child: GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.arrow_back_rounded,
+                              color: Colors.white, size: 20),
+                        ),
                       ),
                     ),
-                  ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(Icons.arrow_back_rounded,
-                                  color: Colors.white, size: 20),
-                            ),
-                          ),
-                          Center(
-                            child: SvgPicture.asset(
-                              'assets/images/Book lover-bro 1.svg',
-                              height: 150,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ],
+                    // Illustration
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: SvgPicture.asset(
+                          'assets/images/Book lover-bro 1.svg',
+                          height: 160,
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ).animate().fadeIn(duration: 400.ms),
+                  ],
+                ),
               ),
             ),
 
-            // ── Form area ──────────────────────────────────────────────
+            // ── Bottom White Form Container ──────────────────────────────
             Container(
-              color: Colors.white,
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              ),
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Register', style: AppTextStyles.headlineLarge)
-                        .animate()
-                        .fadeIn(delay: 100.ms),
-                    const SizedBox(height: 4),
-                    Text('Create an account to use the app',
-                            style: AppTextStyles.bodyMedium)
-                        .animate()
-                        .fadeIn(delay: 150.ms),
-                    const SizedBox(height: 20),
+                    // Title & Subtitle
+                    const Text(
+                      'Register',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Create an account to use the app',
+                      style: AppTextStyles.caption.copyWith(fontSize: 12),
+                    ),
+                    const SizedBox(height: 14),
 
                     // Full Name
-                    _label('Full Name'),
-                    const SizedBox(height: 8),
+                    const Text(
+                      'Full Name',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     TextFormField(
                       controller: _nameCtrl,
                       decoration: const InputDecoration(
                         hintText: 'Enter your full name',
-                        prefixIcon: Icon(Icons.person_outline, size: 20),
+                        prefixIcon: Icon(Icons.person_outline_rounded, size: 18),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
-                      validator: (v) => v == null || v.trim().isEmpty
-                          ? 'Enter your name'
-                          : null,
-                    ).animate().fadeIn(delay: 200.ms),
-                    const SizedBox(height: 14),
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Enter your name' : null,
+                    ),
+                    const SizedBox(height: 10),
 
-                    // Email
-                    _label('Email Address'),
-                    const SizedBox(height: 8),
+                    // Email Address
+                    const Text(
+                      'Email Address',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     TextFormField(
                       controller: _emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
-                        hintText: 'Enter your email',
-                        prefixIcon: Icon(Icons.email_outlined, size: 20),
+                        hintText: 'Enter your email address',
+                        prefixIcon: Icon(Icons.email_outlined, size: 18),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Enter email';
                         if (!v.contains('@')) return 'Enter valid email';
                         return null;
                       },
-                    ).animate().fadeIn(delay: 220.ms),
-                    const SizedBox(height: 14),
+                    ),
+                    const SizedBox(height: 10),
 
                     // Password
-                    _label('Password'),
-                    const SizedBox(height: 8),
+                    const Text(
+                      'Password',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     TextFormField(
                       controller: _passCtrl,
                       obscureText: _obscurePass,
                       decoration: InputDecoration(
                         hintText: 'Enter password',
-                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                        prefixIcon:
+                            const Icon(Icons.lock_outline_rounded, size: 18),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePass
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            size: 20,
+                            size: 18,
+                            color: AppColors.textHint,
                           ),
                           onPressed: () =>
                               setState(() => _obscurePass = !_obscurePass),
@@ -194,56 +224,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (v.length < 6) return 'Min 6 characters';
                         return null;
                       },
-                    ).animate().fadeIn(delay: 240.ms),
-                    const SizedBox(height: 14),
+                    ),
+                    const SizedBox(height: 16),
 
-                    // Confirm Password
-                    _label('Confirm Password'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: _confirmCtrl,
-                      obscureText: _obscureConfirm,
-                      decoration: InputDecoration(
-                        hintText: 'Confirm password',
-                        prefixIcon: const Icon(Icons.lock_outline, size: 20),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureConfirm
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
-                            size: 20,
-                          ),
-                          onPressed: () => setState(
-                              () => _obscureConfirm = !_obscureConfirm),
-                        ),
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Confirm password';
-                        if (v != _passCtrl.text) return 'Passwords do not match';
-                        return null;
-                      },
-                    ).animate().fadeIn(delay: 260.ms),
-                    const SizedBox(height: 24),
-
-                    // Register button
+                    // Register Button (with > arrow)
                     GestureDetector(
                       onTap: auth.isLoading ? null : _register,
                       child: Container(
                         width: double.infinity,
-                        height: 54,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: AppColors.primary,
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        alignment: Alignment.center,
                         child: auth.isLoading
-                            ? const Center(
-                                child: SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
                                 ),
                               )
                             : const Row(
@@ -253,78 +254,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     'Register',
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 15,
+                                      fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'Poppins',
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_rounded,
-                                      color: Colors.white, size: 18),
+                                  SizedBox(width: 6),
+                                  Icon(Icons.chevron_right_rounded,
+                                      color: Colors.white, size: 20),
                                 ],
                               ),
                       ),
-                    ).animate().fadeIn(delay: 280.ms),
-                    const SizedBox(height: 16),
+                    ),
+                    const SizedBox(height: 12),
 
-                    // Or divider
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: AppColors.border)),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text('Or register with',
-                              style: AppTextStyles.caption
-                                  .copyWith(fontSize: 12)),
-                        ),
-                        Expanded(child: Divider(color: AppColors.border)),
-                      ],
-                    ).animate().fadeIn(delay: 300.ms),
-                    const SizedBox(height: 16),
+                    // Social divider
+                    Center(
+                      child: Text(
+                        'Or register with',
+                        style: AppTextStyles.caption.copyWith(fontSize: 11),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
 
                     // Social buttons
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _SocialBtn(
-                            icon: Icons.facebook,
-                            color: AppColors.facebookBlue,
-                            onTap: () {}),
-                        const SizedBox(width: 16),
-                        _SocialBtn(
-                            label: 'G',
-                            color: AppColors.googleRed,
-                            onTap: () {}),
-                        const SizedBox(width: 16),
-                        _SocialBtn(
-                            icon: Icons.apple,
-                            color: Colors.black,
-                            onTap: () {}),
+                        _socialBtn(icon: Icons.facebook, color: AppColors.facebookBlue, onTap: () {}),
+                        const SizedBox(width: 14),
+                        _socialBtn(
+                          customChild: const Text('G',
+                              style: TextStyle(
+                                  color: AppColors.googleRed,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w800)),
+                          onTap: () {},
+                        ),
+                        const SizedBox(width: 14),
+                        _socialBtn(icon: Icons.apple, color: Colors.black, onTap: () {}),
                       ],
-                    ).animate().fadeIn(delay: 320.ms),
-                    const SizedBox(height: 20),
+                    ),
+                    const SizedBox(height: 12),
 
                     // Login link
                     Center(
                       child: GestureDetector(
                         onTap: () => Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(
-                              builder: (_) => const LoginScreen()),
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
                         ),
                         child: RichText(
-                          text: TextSpan(
-                            text: 'Already have an account? ',
+                          text: const TextSpan(
+                            text: "Already have an account? ",
                             style: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 13,
-                                fontFamily: 'Poppins'),
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                              fontFamily: 'Poppins',
+                            ),
                             children: [
                               TextSpan(
                                 text: 'Login',
                                 style: TextStyle(
                                   color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
+                                  fontWeight: FontWeight.w700,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
@@ -332,8 +325,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                    ).animate().fadeIn(delay: 340.ms),
-                    const SizedBox(height: 16),
+                    ),
                   ],
                 ),
               ),
@@ -344,40 +336,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _label(String text) => Text(
-        text,
-        style: AppTextStyles.titleMedium.copyWith(fontSize: 13),
-      );
-}
-
-class _SocialBtn extends StatelessWidget {
-  final IconData? icon;
-  final String? label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SocialBtn({this.icon, this.label, required this.color, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _socialBtn({IconData? icon, Color? color, Widget? customChild, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 56,
-        height: 48,
+        width: 48,
+        height: 40,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: AppColors.border, width: 1.5),
+          border: Border.all(color: AppColors.border, width: 1.2),
         ),
         child: Center(
-          child: label != null
-              ? Text(label!,
-                  style: TextStyle(
-                      color: color,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700))
-              : Icon(icon, color: color, size: 24),
+          child: customChild ?? Icon(icon, color: color, size: 20),
         ),
       ),
     );
