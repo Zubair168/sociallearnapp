@@ -19,27 +19,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<Map<String, dynamic>> _roles = [
     {
-      'title': 'I am Student preparing for YKS',
+      'title': 'I am Student preparing for Exams',
       'panelTitle': 'Lets Start',
-      'panelSubtitle': 'Your learning tools, all in one place.',
+      'panelSubtitle': 'Your personalized learning dashboard, all in one place.',
       'image': 'assets/images/Studying-bro 1.svg',
     },
     {
-      'title': 'I am teacher',
+      'title': 'I am Teacher',
       'panelTitle': 'Teacher Panel',
-      'panelSubtitle': 'Teacher Portal – Your teaching tools, all in one place.',
+      'panelSubtitle': 'Teacher Portal – Manage lectures, quizzes & students.',
       'image': 'assets/images/Attached files-bro (1) 1.svg',
     },
     {
-      'title': 'I am student coach',
-      'panelTitle': 'Student Coach Panel',
-      'panelSubtitle': 'Coach Portal – Track and guide students easily.',
+      'title': 'I am Student Coach / Mentor',
+      'panelTitle': 'Mentor Panel',
+      'panelSubtitle': 'Coach Portal – Guide, track progress & mentor learners.',
       'image': 'assets/images/Book lover-bro 1.svg',
     },
     {
-      'title': 'I am parent',
+      'title': 'I am Parent',
       'panelTitle': 'Parent Panel',
-      'panelSubtitle': 'Parent Portal – Monitor and support your student.',
+      'panelSubtitle': 'Parent Portal – Monitor study habits & academic growth.',
       'image': 'assets/images/Attached files-bro (1) 1 (1).svg',
     },
   ];
@@ -86,57 +86,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ─── 1. Role Selection Screen (Screenshot 1, Top Left) ─────────────────────
+  // ─── 1. Role Selection Screen ─────────────────────────────────────────────
   Widget _buildRoleSelectionScreen(BuildContext context) {
     return Column(
       key: const ValueKey('role_selection'),
       children: [
-        // Top section with TUDU logo & Testimonial Badges
+        // Top section with custom Brand Logo & Testimonial image
         Expanded(
-          flex: 5,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(height: 10),
-                // TUDU Logo
-                const Text(
-                  'TUDU',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                    fontFamily: 'Poppins',
-                  ),
+                const SizedBox(height: 8),
+                // Unique Brand Name (Original, not copying TUDU)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.school_rounded,
+                          color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'EduVerse',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
                 ).animate().fadeIn(duration: 400.ms),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
-                // Review Cards
-                _buildReviewCard(
-                  name: 'Merve',
-                  stars: 5,
-                  comment: "1 ayda TYT'de 20 net arttırdım",
-                  avatarLetter: 'M',
-                ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1),
-                const SizedBox(height: 10),
-
-                _buildReviewCard(
-                  name: 'Berk',
-                  stars: 5,
-                  comment: 'Tartışmasız en iyi YKS uygulaması',
-                  avatarLetter: 'B',
-                ).animate().fadeIn(delay: 250.ms).slideY(begin: 0.1),
-                const SizedBox(height: 10),
-
-                _buildReviewCard(
-                  name: null,
-                  stars: 5,
-                  comment: "İlk 100'e derecemi TUDU'ya borçluyum",
-                  avatarLetter: '⭐',
-                ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1),
+                // Testimonial graphic from design
+                Expanded(
+                  child: Image.asset(
+                    'assets/images/Frame 1261155657.png',
+                    width: double.infinity,
+                    fit: BoxFit.contain,
+                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.05),
+                ),
               ],
             ),
           ),
@@ -162,7 +161,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Welcome to TUDU',
+                        'Welcome to EduVerse',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -180,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   _buildSupportChip(),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
 
               // Role radio items
               ...List.generate(_roles.length, (index) {
@@ -281,36 +280,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  // ─── 2. Role Panel Screen (Screenshot 1: Teacher/Coach/Parent Panel) ────────
+  // ─── 2. Role Panel Screen ─────────────────────────────────────────────────
   Widget _buildRolePanelScreen(BuildContext context) {
     final roleData = _roles[_selectedRole];
 
     return Column(
       key: const ValueKey('role_panel'),
       children: [
-        // Top section with Illustration
+        // Top section with large, prominent Illustration
         Expanded(
-          flex: 5,
           child: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'TUDU',
+                  'EduVerse',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: 30,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
+                    letterSpacing: 1.5,
                     fontFamily: 'Poppins',
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Expanded(
                   child: SvgPicture.asset(
                     roleData['image'],
+                    width: double.infinity,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -466,89 +465,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               fontSize: 11,
               fontWeight: FontWeight.w600,
               fontFamily: 'Poppins',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ─── Review Card Widget ───────────────────────────────────────────────────
-  Widget _buildReviewCard({
-    String? name,
-    required int stars,
-    required String comment,
-    required String avatarLetter,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: Colors.white.withOpacity(0.25),
-            child: Text(
-              avatarLetter,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (name != null) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      Row(
-                        children: List.generate(
-                          stars,
-                          (_) => const Icon(Icons.star_rounded,
-                              color: Color(0xFFFFD700), size: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                ] else ...[
-                  Row(
-                    children: List.generate(
-                      stars,
-                      (_) => const Icon(Icons.star_rounded,
-                          color: Color(0xFFFFD700), size: 14),
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                ],
-                Text(
-                  comment,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.85),
-                    fontSize: 11,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ],
             ),
           ),
         ],

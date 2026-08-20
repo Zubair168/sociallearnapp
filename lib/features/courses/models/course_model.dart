@@ -12,6 +12,8 @@ class CourseModel {
   final int enrolledCount;
   final String category;
   final int lessons;
+  final String? svgAsset;
+  final String? solvedInfo;
 
   const CourseModel({
     required this.id,
@@ -25,6 +27,8 @@ class CourseModel {
     required this.enrolledCount,
     required this.category,
     required this.lessons,
+    this.svgAsset,
+    this.solvedInfo,
   });
 
   factory CourseModel.fromFirestore(DocumentSnapshot doc) {
@@ -41,6 +45,8 @@ class CourseModel {
       enrolledCount: (data['enrolledCount'] ?? 0) as int,
       category: data['category'] ?? '',
       lessons: (data['lessons'] ?? 0) as int,
+      svgAsset: data['svgAsset'],
+      solvedInfo: data['solvedInfo'],
     );
   }
 
@@ -55,5 +61,7 @@ class CourseModel {
         'enrolledCount': enrolledCount,
         'category': category,
         'lessons': lessons,
+        'svgAsset': svgAsset,
+        'solvedInfo': solvedInfo,
       };
 }

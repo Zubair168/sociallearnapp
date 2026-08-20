@@ -38,7 +38,7 @@ class SocialLearnApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LearnHub',
+      title: 'EduVerse',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       home: const _AuthGate(),
@@ -96,20 +96,21 @@ class _SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.auto_stories_rounded, color: Colors.white, size: 72),
+            Icon(Icons.school_rounded, color: Colors.white, size: 76),
             SizedBox(height: 16),
             Text(
-              'LearnHub',
+              'EduVerse',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.w700,
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
                 fontFamily: 'Poppins',
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 6),
             Text(
-              'Your Learning Journey',
+              'Learn • Connect • Excel',
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
