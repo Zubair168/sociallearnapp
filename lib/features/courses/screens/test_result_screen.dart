@@ -153,18 +153,20 @@ class _TestResultScreenState extends State<TestResultScreen>
   Widget _buildHeader() {
     return Stack(
       children: [
-        // Confetti background
-        Container(
-          height: 280,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFFFF8F0), Colors.white],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        // Confetti background spanning full width
+        Positioned.fill(
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFF8F0), Colors.white],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
-          ),
-          child: CustomPaint(
-            painter: _ConfettiPainter(),
+            child: CustomPaint(
+              size: Size.infinite,
+              painter: _ConfettiPainter(),
+            ),
           ),
         ),
 
@@ -192,12 +194,12 @@ class _TestResultScreenState extends State<TestResultScreen>
                 ),
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
               // Celebration icon
               Container(
-                width: 80,
-                height: 80,
+                width: 76,
+                height: 76,
                 decoration: BoxDecoration(
                   color: const Color(0xFFF0F4FF),
                   shape: BoxShape.circle,
@@ -209,7 +211,7 @@ class _TestResultScreenState extends State<TestResultScreen>
                   ],
                 ),
                 child: const Icon(Icons.celebration_rounded,
-                    size: 40, color: Color(0xFF2A3BD4)),
+                    size: 38, color: Color(0xFF2A3BD4)),
               ).animate().scale(
                   duration: 500.ms, curve: Curves.elasticOut),
 
@@ -220,14 +222,22 @@ class _TestResultScreenState extends State<TestResultScreen>
                       fontSize: 13,
                       color: Color(0xFF64748B),
                       fontFamily: 'Poppins')),
-              const SizedBox(height: 4),
-              Text(widget.testTitle,
+              const SizedBox(height: 6),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  widget.testTitle,
+                  textAlign: TextAlign.center,
                   style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF1E293B),
-                      fontFamily: 'Poppins')),
-              const SizedBox(height: 4),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Poppins',
+                    height: 1.3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
               const Text("Here is your result:",
                   style: TextStyle(
                       fontSize: 13,
@@ -741,6 +751,7 @@ class _TestResultScreenState extends State<TestResultScreen>
   }
 
   Widget _buildBottomButtons(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: EdgeInsets.only(
           left: 16,
@@ -748,10 +759,10 @@ class _TestResultScreenState extends State<TestResultScreen>
           top: 12,
           bottom: MediaQuery.of(context).padding.bottom + 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.06),
               blurRadius: 16,
               offset: const Offset(0, -4))
         ],
@@ -761,63 +772,83 @@ class _TestResultScreenState extends State<TestResultScreen>
           // Home Button
           GestureDetector(
             onTap: () {
-              // Pop all the way back to root (HomeScreen)
               Navigator.of(context).popUntil((route) => route.isFirst);
             },
             child: Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F8FC),
+                color: isDark ? const Color(0xFF334155) : const Color(0xFFF7F8FC),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: isDark ? const Color(0xFF475569) : const Color(0xFFE2E8F0)),
               ),
-              child: const Icon(Icons.home_rounded,
-                  color: Color(0xFF64748B), size: 22),
+              child: Icon(Icons.home_rounded,
+                  color: isDark ? Colors.white70 : const Color(0xFF64748B), size: 22),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
 
           // Switch Difficulty
           Expanded(
             child: OutlinedButton(
               onPressed: () => _showSwitchDifficultySheet(context),
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 48),
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 side: const BorderSide(color: Color(0xFF2A3BD4), width: 1.5),
               ),
               child: const Text('Switch Difficulty',
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                      fontSize: 13,
+                      fontSize: 11.5,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF2A3BD4),
                       fontFamily: 'Poppins')),
             ),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 8),
 
           // Next Test
           Expanded(
-            child: ElevatedButton.icon(
+            child: ElevatedButton(
               onPressed: () => _startNextTest(context),
-              icon: const Icon(Icons.arrow_forward_rounded,
-                  color: Colors.white, size: 18),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2A3BD4),
-                minimumSize: const Size(double.infinity, 48),
+                minimumSize: const Size(0, 44),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
-              label: const Text('Next Test',
-                  style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      fontFamily: 'Poppins')),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    child: Text(
+                      'Next Test',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
