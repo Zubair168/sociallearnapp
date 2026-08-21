@@ -34,7 +34,7 @@ class CourseCard extends StatelessWidget {
           border: Border.all(color: AppColors.border, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -55,17 +55,14 @@ class CourseCard extends StatelessWidget {
                     CachedNetworkImage(
                       imageUrl: course.thumbnail,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: AppColors.background,
+                      placeholder: (context, url) => Container(
+                        color: AppColors.primary.withValues(alpha: 0.05),
                         child: const Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                       ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: AppColors.primary.withOpacity(0.1),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         child: const Icon(Icons.play_lesson_rounded,
                             color: AppColors.primary, size: 36),
                       ),
@@ -76,7 +73,7 @@ class CourseCard extends StatelessWidget {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(Icons.play_arrow_rounded,

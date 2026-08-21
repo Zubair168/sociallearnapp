@@ -23,8 +23,8 @@ class GlassCard extends StatelessWidget {
         gradient: gradient ??
             LinearGradient(
               colors: [
-                Colors.white.withOpacity(0.08),
-                Colors.white.withOpacity(0.03),
+                Colors.white.withValues(alpha: 0.08),
+                Colors.white.withValues(alpha: 0.03),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,

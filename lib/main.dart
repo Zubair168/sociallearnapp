@@ -5,10 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/auth/screens/login_screen.dart';
 import 'features/auth/services/auth_service.dart';
+import 'features/courses/providers/course_provider.dart';
 import 'features/home/screens/home_screen.dart';
-import 'features/onboarding/screens/onboarding_screen.dart';
+import 'features/welcome/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -25,8 +25,11 @@ void main() async {
   );
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthService(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
+      ],
       child: const SocialLearnApp(),
     ),
   );
@@ -47,16 +50,8 @@ class SocialLearnApp extends StatelessWidget {
 }
 
 /// Auth gate — decides which screen to show based on auth state
-class _AuthGate extends StatefulWidget {
+class _AuthGate extends StatelessWidget {
   const _AuthGate();
-
-  @override
-  State<_AuthGate> createState() => _AuthGateState();
-}
-
-class _AuthGateState extends State<_AuthGate> {
-  /// Show onboarding only on first launch (per session)
-  bool _showOnboarding = true;
 
   @override
   Widget build(BuildContext context) {
@@ -73,13 +68,8 @@ class _AuthGateState extends State<_AuthGate> {
           return const HomeScreen();
         }
 
-        // Not logged in → Onboarding (first time) or Login
-        if (_showOnboarding) {
-          _showOnboarding = false;
-          return const OnboardingScreen();
-        }
-
-        return const LoginScreen();
+        // Not logged in → Welcome Screen (Role selection)
+        return const WelcomeScreen();
       },
     );
   }

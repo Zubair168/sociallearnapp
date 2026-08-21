@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Primary blue-indigo (TUDU style)
+  // Primary blue-indigo (EduVerse style)
   static const Color primary = Color(0xFF3B4CE8);
   static const Color primaryDark = Color(0xFF2A3BD4);
   static const Color primaryLight = Color(0xFF6B7BF0);

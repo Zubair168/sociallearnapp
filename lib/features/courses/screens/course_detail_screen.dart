@@ -86,7 +86,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
               child: Container(
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.arrow_back_rounded,
@@ -100,7 +100,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   CachedNetworkImage(
                     imageUrl: course.thumbnail,
                     fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => Container(
+                    errorWidget: (context, url, error) => Container(
                       color: AppColors.primary,
                       child: const Icon(Icons.play_lesson_rounded,
                           color: Colors.white, size: 64),
@@ -112,7 +112,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                       gradient: LinearGradient(
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.6),
+                          Colors.black.withValues(alpha: 0.6),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -152,7 +152,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -178,7 +178,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundColor: AppColors.primary.withOpacity(0.15),
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                         child: Text(
                           course.instructor[0].toUpperCase(),
                           style: const TextStyle(
