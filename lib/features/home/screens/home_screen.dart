@@ -1887,12 +1887,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildDrawerSubItem(
                         icon: Icons.close_rounded,
                         title: 'Incorrect Questions',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FavoritedQuestionsScreen(),
+                            ),
+                          );
+                        },
                       ),
                       _buildDrawerSubItem(
                         icon: Icons.info_outline_rounded,
                         title: 'Unattempted Questions',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const FavoritedQuestionsScreen(),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -1907,19 +1923,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       _buildDrawerSubItem(
                         title: 'Create Personalized Question Bank',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFeatureInfoDialog(
+                            title: 'Personalized Question Bank',
+                            description:
+                                'Create custom printed question booklets tailored precisely to your weak areas and study roadmap.',
+                            icon: Icons.auto_stories_rounded,
+                          );
+                        },
                       ),
                       _buildDrawerSubItem(
                         title: 'Smart Books',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFeatureInfoDialog(
+                            title: 'Smart Books',
+                            description:
+                                'Scan questions from our printed Smart Books with your phone camera to watch instant video solutions.',
+                            icon: Icons.qr_code_scanner_rounded,
+                          );
+                        },
                       ),
                       _buildDrawerSubItem(
                         title: 'My Books & Orders',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFeatureInfoDialog(
+                            title: 'My Books & Orders',
+                            description:
+                                'Track your printed book shipments and view your digital access keys.',
+                            icon: Icons.local_shipping_outlined,
+                          );
+                        },
                       ),
                       _buildDrawerSubItem(
                         title: 'Check Answers',
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showFeatureInfoDialog(
+                            title: 'Check Answers',
+                            description:
+                                'Quickly enter optical test codes from your printed books to calculate your net scores.',
+                            icon: Icons.fact_check_outlined,
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -1928,28 +1976,60 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildDrawerItem(
                     icon: Icons.edit_note_rounded,
                     title: 'Summary Notes',
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showFeatureInfoDialog(
+                        title: 'Summary Notes',
+                        description:
+                            'High-yield formula cheat sheets, concept maps, and summary notes for all TYT & AYT topics.',
+                        icon: Icons.edit_note_rounded,
+                      );
+                    },
                   ),
 
                   // Study Plans
                   _buildDrawerItem(
                     icon: Icons.calendar_today_outlined,
                     title: 'Study Plans',
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SmartStudyPlanScreen(),
+                        ),
+                      );
+                    },
                   ),
 
                   // AI Assistant
                   _buildDrawerItem(
                     icon: Icons.smart_toy_outlined,
                     title: 'AI Assistant',
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showFeatureInfoDialog(
+                        title: 'AI Study Assistant',
+                        description:
+                            'Ask step-by-step math, physics, and chemistry solutions or generate personalized test hints with your AI Tutor.',
+                        icon: Icons.smart_toy_outlined,
+                      );
+                    },
                   ),
 
                   // About
                   _buildDrawerItem(
                     icon: Icons.info_outline_rounded,
                     title: 'About',
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showFeatureInfoDialog(
+                        title: 'About EduVerse',
+                        description:
+                            'EduVerse v1.0.0 — Your unified social learning platform for high-performance exam preparation.',
+                        icon: Icons.school_rounded,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -2062,13 +2142,172 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontFamily: 'Poppins',
                   ),
                 ),
-                onTap: () async {
+                onTap: () {
                   Navigator.pop(context);
-                  await auth.signOut();
+                  _showLogoutConfirmationDialog(auth);
                 },
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutConfirmationDialog(AuthService auth) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEE2E2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.logout_rounded,
+                    color: Color(0xFFEF4444), size: 28),
+              ),
+              const SizedBox(height: 14),
+              const Text(
+                'Log Out',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1E293B),
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Are you sure you want to log out of EduVerse?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Colors.grey.shade600,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      child: const Text('Cancel',
+                          style: TextStyle(
+                              color: Color(0xFF64748B), fontFamily: 'Poppins')),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(ctx);
+                        await auth.signOut();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF4444),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
+                      ),
+                      child: const Text('Log Out',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins')),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showFeatureInfoDialog({
+    required String title,
+    required String description,
+    required IconData icon,
+  }) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEFF4FF),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: const Color(0xFF2A3BD4), size: 30),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16.5,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1E293B),
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: Colors.grey.shade600,
+                  fontFamily: 'Poppins',
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2A3BD4),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Got It',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
