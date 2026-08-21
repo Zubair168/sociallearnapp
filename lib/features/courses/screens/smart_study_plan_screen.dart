@@ -254,24 +254,30 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                 fontFamily: 'Poppins',
               ),
             ),
-            OutlinedButton.icon(
-              onPressed: () => _openAddTaskScreen(context),
-              icon: const Icon(Icons.add_rounded, size: 16, color: Color(0xFF2A3BD4)),
-              label: const Text(
-                'Add New',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2A3BD4),
-                  fontFamily: 'Poppins',
+            GestureDetector(
+              onTap: () => _openAddTaskScreen(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF2A3BD4), width: 1.2),
                 ),
-              ),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Color(0xFF2A3BD4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, size: 16, color: Color(0xFF2A3BD4)),
+                    SizedBox(width: 3),
+                    Text(
+                      'Add New',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2A3BD4),
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -416,13 +422,17 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              task.title,
-                              style: const TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF1E293B),
-                                fontFamily: 'Poppins',
+                            Expanded(
+                              child: Text(
+                                task.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1E293B),
+                                  fontFamily: 'Poppins',
+                                ),
                               ),
                             ),
                             const SizedBox(width: 4),
