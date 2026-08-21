@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sociallearnapp/features/courses/screens/test_result_screen.dart';
+import 'package:sociallearnapp/features/courses/screens/test_solving_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/topic_analysis_screen.dart';
 import 'package:sociallearnapp/features/video/screens/video_player_screen.dart';
 
@@ -83,7 +83,7 @@ class SubjectTopicsScreen extends StatefulWidget {
 }
 
 class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
-  final List<TopicItem> _topics = const [
+  final List<TopicItem> _originalTopics = const [
     TopicItem(
       title: 'Linear Equations',
       solved: 24,
@@ -132,7 +132,186 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
       totalWatched: 1,
       totalVideos: 5,
     ),
+    TopicItem(
+      title: 'Trigonometry & Unit Circle',
+      solved: 38,
+      total: 75,
+      completedPct: 0.40,
+      greenDots: 2,
+      yellowDots: 1,
+      redDots: 1,
+      videoLessonsAvailable: true,
+      totalWatched: 3,
+      totalVideos: 9,
+    ),
+    TopicItem(
+      title: 'Logarithms & Exponentials',
+      solved: 42,
+      total: 60,
+      completedPct: 0.70,
+      greenDots: 3,
+      yellowDots: 1,
+      redDots: 0,
+      videoLessonsAvailable: true,
+      totalWatched: 6,
+      totalVideos: 7,
+    ),
   ];
+
+  late List<TopicItem> _topics;
+  String _currentSort = 'Default';
+
+  @override
+  void initState() {
+    super.initState();
+    _topics = List.from(_originalTopics);
+  }
+
+  void _applySort(String sortType) {
+    setState(() {
+      _currentSort = sortType;
+      switch (sortType) {
+        case 'Name (A - Z)':
+          _topics.sort((a, b) => a.title.compareTo(b.title));
+          break;
+        case 'Name (Z - A)':
+          _topics.sort((a, b) => b.title.compareTo(a.title));
+          break;
+        case 'Completion %':
+          _topics.sort((a, b) => b.completedPct.compareTo(a.completedPct));
+          break;
+        case 'Most Solved':
+          _topics.sort((a, b) => b.solved.compareTo(a.solved));
+          break;
+        case 'Least Solved':
+          _topics.sort((a, b) => a.solved.compareTo(b.solved));
+          break;
+        case 'Most Videos':
+          _topics.sort((a, b) => b.totalVideos.compareTo(a.totalVideos));
+          break;
+        case 'Default':
+        default:
+          _topics = List.from(_originalTopics);
+          break;
+      }
+    });
+  }
+
+  void _showSortModal() {
+    final sortOptions = [
+      {'label': 'Default', 'icon': Icons.tune_rounded},
+      {'label': 'Name (A - Z)', 'icon': Icons.sort_by_alpha_rounded},
+      {'label': 'Name (Z - A)', 'icon': Icons.sort_by_alpha_rounded},
+      {'label': 'Completion %', 'icon': Icons.percent_rounded},
+      {'label': 'Most Solved', 'icon': Icons.trending_up_rounded},
+      {'label': 'Least Solved', 'icon': Icons.trending_down_rounded},
+      {'label': 'Most Videos', 'icon': Icons.video_collection_outlined},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: EdgeInsets.fromLTRB(
+            20, 16, 20, MediaQuery.of(ctx).padding.bottom + 20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Sort Topics',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                Text(
+                  '${_topics.length} topics',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            const Divider(height: 1, color: Color(0xFFF1F5F9)),
+            const SizedBox(height: 8),
+
+            ...sortOptions.map((opt) {
+              final label = opt['label'] as String;
+              final icon = opt['icon'] as IconData;
+              final isSelected = _currentSort == label;
+
+              return ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                leading: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFFEEF2FF)
+                        : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected
+                        ? const Color(0xFF2A3BD4)
+                        : const Color(0xFF64748B),
+                    size: 18,
+                  ),
+                ),
+                title: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    color: isSelected
+                        ? const Color(0xFF2A3BD4)
+                        : const Color(0xFF1E293B),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                trailing: isSelected
+                    ? const Icon(Icons.check_circle_rounded,
+                        color: Color(0xFF2A3BD4), size: 20)
+                    : null,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _applySort(label);
+                },
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,21 +356,45 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                   fontFamily: 'Poppins',
                 ),
               ),
-              Row(
-                children: [
-                  Icon(Icons.swap_vert_rounded,
-                      size: 16, color: Colors.indigo.shade800),
-                  const SizedBox(width: 3),
-                  Text(
-                    'Sort By',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.indigo.shade800,
-                      fontFamily: 'Poppins',
+              GestureDetector(
+                onTap: _showSortModal,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: _currentSort != 'Default'
+                        ? const Color(0xFFEEF2FF)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: _currentSort != 'Default'
+                          ? const Color(0xFF2A3BD4).withValues(alpha: 0.3)
+                          : const Color(0xFFE2E8F0),
                     ),
                   ),
-                ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.swap_vert_rounded,
+                          size: 15,
+                          color: _currentSort != 'Default'
+                              ? const Color(0xFF2A3BD4)
+                              : Colors.indigo.shade800),
+                      const SizedBox(width: 4),
+                      Text(
+                        _currentSort == 'Default' ? 'Sort By' : _currentSort,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w600,
+                          color: _currentSort != 'Default'
+                              ? const Color(0xFF2A3BD4)
+                              : Colors.indigo.shade800,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -855,20 +1058,8 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => TestResultScreen(
-                    testTitle: widget.topic.title,
-                    totalQuestions: 10,
-                    correct: 8,
-                    incorrect: 2,
-                    unanswered: 0,
-                    netScore: 32.25,
-                    avgScore: 32.00,
-                    timeTakenSeconds: 625,
-                    avgTimeSeconds: 505,
-                    currentNet: 1513.25,
-                    rankChange: 10,
-                    currentRank: 23,
-                    promoted: false,
+                  builder: (_) => TestSolvingScreen(
+                    topicTitle: widget.topic.title,
                   ),
                 ),
               );

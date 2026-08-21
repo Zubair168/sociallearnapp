@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:sociallearnapp/features/courses/screens/subject_topics_screen.dart';
 
 class TestResultScreen extends StatefulWidget {
   final String testTitle;
@@ -101,15 +102,17 @@ class _TestResultScreenState extends State<TestResultScreen>
                     SizedBox(
                       width: double.infinity,
                       height: 48,
-                      child: OutlinedButton(
-                        onPressed: () {},
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showViewAnswersSheet(context),
+                        icon: const Icon(Icons.visibility_outlined,
+                            size: 18, color: Color(0xFF2A3BD4)),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                               color: Color(0xFF2A3BD4), width: 1.5),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
                         ),
-                        child: const Text('View Answers',
+                        label: const Text('View Answers',
                             style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -755,8 +758,12 @@ class _TestResultScreenState extends State<TestResultScreen>
       ),
       child: Row(
         children: [
+          // Home Button
           GestureDetector(
-            onTap: () => Navigator.maybePop(context),
+            onTap: () {
+              // Pop all the way back to root (HomeScreen)
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
             child: Container(
               width: 48,
               height: 48,
@@ -770,9 +777,11 @@ class _TestResultScreenState extends State<TestResultScreen>
             ),
           ),
           const SizedBox(width: 10),
+
+          // Switch Difficulty
           Expanded(
             child: OutlinedButton(
-              onPressed: () {},
+              onPressed: () => _showSwitchDifficultySheet(context),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
@@ -780,17 +789,22 @@ class _TestResultScreenState extends State<TestResultScreen>
                 side: const BorderSide(color: Color(0xFF2A3BD4), width: 1.5),
               ),
               child: const Text('Switch Difficulty',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Color(0xFF2A3BD4),
                       fontFamily: 'Poppins')),
             ),
           ),
           const SizedBox(width: 10),
+
+          // Next Test
           Expanded(
-            child: ElevatedButton(
-              onPressed: () {},
+            child: ElevatedButton.icon(
+              onPressed: () => _startNextTest(context),
+              icon: const Icon(Icons.arrow_forward_rounded,
+                  color: Colors.white, size: 18),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2A3BD4),
                 minimumSize: const Size(double.infinity, 48),
@@ -798,9 +812,9 @@ class _TestResultScreenState extends State<TestResultScreen>
                     borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
-              child: const Text('Next Test',
+              label: const Text('Next Test',
                   style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                       fontFamily: 'Poppins')),
@@ -808,6 +822,498 @@ class _TestResultScreenState extends State<TestResultScreen>
           ),
         ],
       ),
+    );
+  }
+
+  // ─── Switch Difficulty Bottom Sheet ────────────────────────────────────────
+  void _showSwitchDifficultySheet(BuildContext context) {
+    final difficulties = [
+      {'label': 'Easy', 'color': const Color(0xFF22C55E), 'icon': Icons.sentiment_satisfied_alt_rounded},
+      {'label': 'Medium', 'color': const Color(0xFFF59E0B), 'icon': Icons.sentiment_neutral_rounded},
+      {'label': 'Hard', 'color': const Color(0xFFEF4444), 'icon': Icons.sentiment_very_dissatisfied_rounded},
+      {'label': 'Past Exam', 'color': const Color(0xFFFF6B35), 'icon': Icons.history_edu_rounded},
+      {'label': '0 Mistake', 'color': const Color(0xFF3B82F6), 'icon': Icons.verified_rounded},
+      {'label': 'Alternative', 'color': const Color(0xFFEC4899), 'icon': Icons.auto_fix_high_rounded},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: EdgeInsets.fromLTRB(
+            20, 16, 20, MediaQuery.of(ctx).padding.bottom + 28),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Drag handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Switch Difficulty',
+                style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Poppins')),
+            const SizedBox(height: 4),
+            Text('Choose a new difficulty to restart this test',
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                    fontFamily: 'Poppins')),
+            const SizedBox(height: 18),
+
+            // 2-column grid of difficulty options
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 2.8,
+              ),
+              itemCount: difficulties.length,
+              itemBuilder: (_, i) {
+                final d = difficulties[i];
+                final color = d['color'] as Color;
+                final icon = d['icon'] as IconData;
+                final label = d['label'] as String;
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => TestResultScreen(
+                          testTitle: widget.testTitle,
+                          totalQuestions: widget.totalQuestions,
+                          correct: widget.correct,
+                          incorrect: widget.incorrect,
+                          unanswered: widget.unanswered,
+                          netScore: widget.netScore,
+                          avgScore: widget.avgScore,
+                          timeTakenSeconds: widget.timeTakenSeconds,
+                          avgTimeSeconds: widget.avgTimeSeconds,
+                          currentNet: widget.currentNet,
+                          rankChange: widget.rankChange,
+                          currentRank: widget.currentRank,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: color.withValues(alpha: 0.3)),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        Icon(icon, color: color, size: 20),
+                        const SizedBox(width: 8),
+                        Text(label,
+                            style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: color,
+                                fontFamily: 'Poppins')),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Next Test Navigation ───────────────────────────────────────────────────
+  void _startNextTest(BuildContext context) {
+    // Pop the current result screen and go to the subject topics screen
+    // to pick the next test topic
+    Navigator.pop(context);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const SubjectTopicsScreen(
+          subjectName: 'Mathematics',
+        ),
+      ),
+    );
+  }
+
+  // ─── View Answers Bottom Sheet ──────────────────────────────────────────────
+  void _showViewAnswersSheet(BuildContext context) {
+    final questions = List.generate(widget.totalQuestions, (i) {
+      final status = i < widget.correct
+          ? 'correct'
+          : i < widget.correct + widget.incorrect
+              ? 'incorrect'
+              : 'unanswered';
+      return {
+        'number': i + 1,
+        'status': status,
+        'yourAnswer': status == 'unanswered' ? '-' : ['A', 'B', 'C', 'D'][i % 4],
+        'correctAnswer': ['A', 'B', 'C', 'D'][i % 4],
+      };
+    });
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.75,
+        maxChildSize: 0.95,
+        minChildSize: 0.4,
+        builder: (_, controller) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              // Handle + header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                child: Column(
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Answer Review',
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'Poppins')),
+                        // Summary pills
+                        Row(
+                          children: [
+                            _answerPill(
+                                '${widget.correct}✓', const Color(0xFF22C55E)),
+                            const SizedBox(width: 6),
+                            _answerPill(
+                                '${widget.incorrect}✗', const Color(0xFFEF4444)),
+                            const SizedBox(width: 6),
+                            _answerPill(
+                                '${widget.unanswered}-', const Color(0xFFF59E0B)),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  ],
+                ),
+              ),
+
+              // Questions list
+              Expanded(
+                child: ListView.separated(
+                  controller: controller,
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                  itemCount: questions.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  itemBuilder: (_, i) {
+                    final q = questions[i];
+                    final status = q['status'] as String;
+                    final Color statusColor = status == 'correct'
+                        ? const Color(0xFF22C55E)
+                        : status == 'incorrect'
+                            ? const Color(0xFFEF4444)
+                            : const Color(0xFFF59E0B);
+                    final IconData statusIcon = status == 'correct'
+                        ? Icons.check_circle_rounded
+                        : status == 'incorrect'
+                            ? Icons.cancel_rounded
+                            : Icons.radio_button_unchecked_rounded;
+
+                    return InkWell(
+                      onTap: () => _showSolutionHelpfulModal(context, q['number'] as int),
+                      borderRadius: BorderRadius.circular(10),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                        child: Row(
+                          children: [
+                            // Question number
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: statusColor.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              alignment: Alignment.center,
+                              child: Text('${q['number']}',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: statusColor,
+                                      fontFamily: 'Poppins')),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Question ${q['number']}',
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF1E293B),
+                                          fontFamily: 'Poppins')),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Text('Your answer: ${q['yourAnswer']}',
+                                          style: TextStyle(
+                                              fontSize: 11,
+                                              color: statusColor,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: 'Poppins')),
+                                      if (status == 'incorrect') ...[
+                                        const SizedBox(width: 8),
+                                        Text(
+                                            'Correct: ${q['correctAnswer']}',
+                                            style: const TextStyle(
+                                                fontSize: 11,
+                                                color: Color(0xFF22C55E),
+                                                fontWeight: FontWeight.w500,
+                                                fontFamily: 'Poppins')),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(statusIcon, color: statusColor, size: 20),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─── Modal: Was this solution Helpful? (Screenshot 8) ──────────────────────
+  void _showSolutionHelpfulModal(BuildContext context, int questionNumber) {
+    bool? isHelpful;
+    final commentCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Was this solution Helpful?',
+                  style: TextStyle(
+                    fontSize: 16.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Thumbs Up / Down Row
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Yes (Thumbs Up)
+                    GestureDetector(
+                      onTap: () => setModalState(() => isHelpful = true),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isHelpful == true ? const Color(0xFFE0F2FE) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isHelpful == true ? const Color(0xFF0284C7) : const Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFEFF6FF),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.thumb_up_alt_rounded, color: Color(0xFF0284C7), size: 30),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Yes',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 24),
+
+                    // No (Thumbs Down)
+                    GestureDetector(
+                      onTap: () => setModalState(() => isHelpful = false),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isHelpful == false ? const Color(0xFFFEE2E2) : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isHelpful == false ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFF1F5F9),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.thumb_down_alt_rounded, color: Color(0xFF94A3B8), size: 30),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'No',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                if (isHelpful != null) ...[
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: commentCtrl,
+                    decoration: InputDecoration(
+                      hintText: 'Add a comment (Optional)',
+                      hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400, fontFamily: 'Poppins'),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 22),
+
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 44),
+                          side: const BorderSide(color: Color(0xFFCBD5E1)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        child: const Text('Close', style: TextStyle(color: Color(0xFF64748B), fontFamily: 'Poppins')),
+                      ),
+                    ),
+                    if (isHelpful != null) ...[
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(ctx);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Feedback submitted! Thank you.'), backgroundColor: Color(0xFF16A34A), behavior: SnackBarBehavior.floating),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2A3BD4),
+                            minimumSize: const Size(0, 44),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            elevation: 0,
+                          ),
+                          child: const Text('Submit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _answerPill(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(text,
+          style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontFamily: 'Poppins')),
     );
   }
 

@@ -6,10 +6,14 @@ import 'package:sociallearnapp/core/constants/app_colors.dart';
 import 'package:sociallearnapp/features/auth/services/auth_service.dart';
 import 'package:sociallearnapp/core/theme/theme_provider.dart';
 import 'package:sociallearnapp/features/courses/screens/courses_screen.dart';
+import 'package:sociallearnapp/features/courses/screens/subject_topics_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/favorited_questions_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/smart_study_plan_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/trial_exams_screen.dart';
+import 'package:sociallearnapp/features/courses/screens/test_result_screen.dart';
+import 'package:sociallearnapp/features/notifications/screens/notifications_screen.dart';
 import 'package:sociallearnapp/features/notifications/services/notification_service.dart';
+import 'package:sociallearnapp/features/profile/screens/profile_screen.dart';
 import 'package:sociallearnapp/features/progress/services/progress_storage_service.dart';
 import 'package:sociallearnapp/features/stats/screens/stats_screen.dart';
 import 'package:sociallearnapp/features/video/screens/video_player_screen.dart';
@@ -137,6 +141,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildDashboard(User? user) {
     final name = user?.displayName?.split(' ').first ?? 'Harsh';
     final dateStr = _formatCurrentDate();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : AppColors.textPrimary;
 
     return SafeArea(
       bottom: false,
@@ -151,41 +157,50 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Menu & Greeting
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                      child: const Icon(
-                        Icons.notes_rounded,
-                        color: AppColors.textPrimary,
-                        size: 28,
+                Expanded(
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                        child: Icon(
+                          Icons.notes_rounded,
+                          color: textPrimary,
+                          size: 28,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 14),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          dateStr,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade500,
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.w400,
-                          ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              dateStr,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w400,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Welcome back, $name',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                                fontFamily: 'Poppins',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Welcome back, $name',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primary,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
 
                 // Right Actions: Bell with red dot + Avatar
@@ -193,13 +208,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     // Notification Bell
                     GestureDetector(
-                      onTap: _showYearlyPlannerDialog,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsScreen(),
+                        ),
+                      ),
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.notifications_none_rounded,
-                            color: Color(0xFF1E293B),
+                            color: textPrimary,
                             size: 26,
                           ),
                           Positioned(
@@ -219,9 +239,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 12),
 
-                    // Avatar
+                    // Avatar → open Profile
                     GestureDetector(
-                      onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileScreen(),
+                        ),
+                      ),
                       child: Container(
                         width: 36,
                         height: 36,
@@ -249,22 +274,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // ── 2. Top Stats Row (Days Until Exam & Daily Goal) ──────────────
+            // ── 2. Top Stats Row (Days Until Exam & Daily Goal) Exact Match ─
             Row(
               children: [
-                // Days until exam
+                // ── Card 1: Days Until Exam ──
                 Expanded(
                   child: GestureDetector(
-                    onTap: _showOnboardingTasksSheet,
+                    onTap: _showExamCountdownModal,
                     child: Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade100),
+                        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.02),
+                            color: Colors.black.withValues(alpha: 0.025),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -272,36 +297,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                          const Text(
                             'Days Until Exam',
                             style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey.shade500,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF64748B),
                               fontFamily: 'Poppins',
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 10),
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.08),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(Icons.calendar_today_rounded,
-                                    color: AppColors.primary, size: 18),
+                              // Blue Calendar Icon without enclosing background box
+                              const Icon(
+                                Icons.calendar_today_rounded,
+                                color: Color(0xFF2A3BD4),
+                                size: 26,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 10),
                               const Text(
                                 '16',
                                 style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: 26,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimary,
+                                  color: Color(0xFF1E293B),
                                   fontFamily: 'Poppins',
+                                  height: 1.1,
                                 ),
                               ),
                             ],
@@ -313,113 +338,110 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(width: 12),
 
-                // Daily Goal Card matching Screenshot
+                // ── Card 2: Daily Goal Exact Match ──
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFF1F5F9)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Blue Target Icon
-                        Container(
-                          width: 38,
-                          height: 38,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFFEFF4FF),
-                          ),
-                          child: const Icon(
-                            Icons.track_changes_rounded,
-                            color: Color(0xFF2A3BD4),
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Consumer<ProgressProvider>(
-                            builder: (context, progress, _) {
-                              final current = progress.dailySolved;
-                              final goal = progress.dailyGoal;
-                              final pct = (current / (goal > 0 ? goal : 1)).clamp(0.0, 1.0);
+                  child: Consumer<ProgressProvider>(
+                    builder: (context, progress, _) {
+                      final current = progress.dailySolved;
+                      final goal = progress.dailyGoal;
+                      final pct = (current / (goal > 0 ? goal : 1)).clamp(0.0, 1.0);
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        'Daily Goal',
-                                        style: TextStyle(
-                                          fontSize: 10.5,
-                                          color: Colors.grey.shade500,
-                                          fontWeight: FontWeight.w500,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                      Icon(
-                                        Icons.edit_outlined,
-                                        size: 13,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 2),
-                                  RichText(
-                                    text: TextSpan(
-                                      text: '$goal ',
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF1E293B),
-                                        fontFamily: 'Poppins',
-                                      ),
-                                      children: const [
-                                        TextSpan(
-                                          text: 'Questions',
+                      return GestureDetector(
+                        onTap: _showDailyGoalPickerModal,
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                                color: const Color(0xFFF1F5F9), width: 1.2),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.025),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Target Icon (Bullseye)
+                              const Icon(
+                                Icons.track_changes_rounded,
+                                color: Color(0xFF2A3BD4),
+                                size: 36,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Daily Goal',
                                           style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w400,
+                                            fontSize: 11.5,
+                                            fontWeight: FontWeight.w500,
                                             color: Color(0xFF64748B),
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
+                                        const Icon(
+                                          Icons.edit_outlined,
+                                          size: 15,
+                                          color: Color(0xFF2A3BD4),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(3),
-                                    child: LinearProgressIndicator(
-                                      value: pct,
-                                      minHeight: 4,
-                                      backgroundColor: const Color(0xFFE2E8F0),
-                                      valueColor: const AlwaysStoppedAnimation<Color>(
-                                        Color(0xFF2A3BD4),
+                                    const SizedBox(height: 2),
+                                    RichText(
+                                      text: TextSpan(
+                                        text: '$goal ',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF1E293B),
+                                          fontFamily: 'Poppins',
+                                        ),
+                                        children: const [
+                                          TextSpan(
+                                            text: 'Questions',
+                                            style: TextStyle(
+                                              fontSize: 12.5,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xFF1E293B),
+                                              fontFamily: 'Poppins',
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            },
+                                    const SizedBox(height: 6),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(3),
+                                      child: LinearProgressIndicator(
+                                        value: pct,
+                                        minHeight: 4.5,
+                                        backgroundColor: const Color(0xFFE2E8F0),
+                                        valueColor:
+                                            const AlwaysStoppedAnimation<Color>(
+                                          Color(0xFF2A3BD4),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 ),
               ],
@@ -427,14 +449,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 14),
 
-            // ── 4. My Plan Card (Empty State) ────────────────────────────────
+            // ── 4. My Plan Card (Active State from Screenshot) ───────────────
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade100),
+                border: Border.all(color: const Color(0xFFF1F5F9)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.02),
@@ -444,16 +466,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Top Title and Plan Details link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         'My Plan',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: Color(0xFF1E293B),
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -466,171 +490,354 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: Row(
+                        child: const Row(
                           children: [
                             Text(
                               'Plan Details',
                               style: TextStyle(
                                 fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF2A3BD4),
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            const SizedBox(width: 2),
+                            SizedBox(width: 2),
                             Icon(Icons.chevron_right_rounded,
-                                size: 16, color: AppColors.primary),
+                                size: 16, color: Color(0xFF2A3BD4)),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
 
-                  // Checklist icon in grey circle
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF1F3F9),
-                      shape: BoxShape.circle,
+                  // Progress description
+                  RichText(
+                    text: const TextSpan(
+                      text: 'You need to solve ',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF475569),
+                        fontFamily: 'Poppins',
+                      ),
+                      children: [
+                        TextSpan(
+                          text: '4 more ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'tests to complete daily plan',
+                        ),
+                      ],
                     ),
-                    child: Icon(Icons.assignment_outlined,
-                        color: Colors.grey.shade400, size: 24),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
 
+                  // Progress Bar with 0 and 10 labels
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: const LinearProgressIndicator(
+                      value: 0.6,
+                      minHeight: 6,
+                      backgroundColor: Color(0xFFE2E8F0),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF2A3BD4),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '0',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color: Color(0xFF94A3B8),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      Text(
+                        '10',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color: Color(0xFF94A3B8),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  // Today's Pending Tasks Header
                   const Text(
-                    'No Active Study Plan',
+                    "Today's Pending Tasks",
                     style: TextStyle(
-                      fontSize: 13.5,
+                      fontSize: 12.5,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: Color(0xFF1E293B),
                       fontFamily: 'Poppins',
                     ),
                   ),
+                  const SizedBox(height: 10),
+
+                  // Task 1: Linear Equations
+                  _buildPendingTaskItem(
+                    title: 'Linear Equations',
+                    tier: 'TYT',
+                    tierBg: const Color(0xFFEEF2FF),
+                    tierFg: const Color(0xFF2A3BD4),
+                    duration: '60 mins',
+                    iconBg: const Color(0xFFE0F2FE),
+                    iconColor: const Color(0xFF0284C7),
+                    icon: Icons.calculate_outlined,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SubjectTopicsScreen(
+                            subjectName: 'Mathematics',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const Divider(color: Color(0xFFF1F5F9), height: 16),
+
+                  // Task 2: Tanzimat Literature
+                  _buildPendingTaskItem(
+                    title: 'Tanzimat Literature',
+                    tier: 'AYT',
+                    tierBg: const Color(0xFFFFF7ED),
+                    tierFg: const Color(0xFFEA580C),
+                    duration: '30 mins',
+                    iconBg: const Color(0xFFFFE4E6),
+                    iconColor: const Color(0xFFE11D48),
+                    icon: Icons.flag_outlined,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SubjectTopicsScreen(
+                            subjectName: 'Turkish Literature',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
                   const SizedBox(height: 14),
 
+                  // View All (4) Button
                   GestureDetector(
-                    onTap: _showYearlyPlannerDialog,
+                    onTap: _showOnboardingTasksSheet,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 9),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(10),
+                        color: const Color(0xFFEBF0FE),
+                        borderRadius: BorderRadius.circular(8),
                       ),
+                      alignment: Alignment.center,
                       child: const Text(
-                        'Create a study plan',
+                        'View All (4)',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: Color(0xFF2A3BD4),
                           fontFamily: 'Poppins',
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 4),
                 ],
               ),
             ).animate().fadeIn(delay: 150.ms),
 
             const SizedBox(height: 14),
 
-            // ── 5. 2x3 Grid Feature Cards (Empty States) ─────────────────────
+            // ── 5. 2x3 Grid Feature Cards (Active Populated State) ───────────
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
                     children: [
-                      // Coaching
+                      // 1. Coaching Card
                       _buildGridCard(
                         icon: Icons.record_voice_over_outlined,
                         title: 'Coaching',
                         content: Column(
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
+                            const SizedBox(height: 6),
+                            const CircleAvatar(
                               radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.person,
-                                  color: Colors.grey.shade400, size: 22),
+                              backgroundImage: NetworkImage(
+                                'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'No Active Coach',
+                            const SizedBox(height: 6),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    'Ayşegül Allen',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF1E293B),
+                                      fontFamily: 'Poppins',
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(Icons.verified_rounded,
+                                    color: Color(0xFF2A3BD4), size: 14),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Active till: 23 Jul 2025',
                               style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 9.5,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            const SizedBox(height: 4),
                           ],
                         ),
-                        btnText: 'Buy Coaching Package',
+                        btnText: 'Go to Coaching',
                         onTap: _showCoachingModal,
                       ),
                       const SizedBox(height: 12),
 
-                      // Latest Rank
+                      // 3. Your Latest Rank Card
                       _buildGridCard(
-                        icon: Icons.trending_up_rounded,
+                        icon: Icons.person_outline_rounded,
                         title: 'Your Latest Rank',
                         content: Column(
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.military_tech_outlined,
-                                  color: Colors.grey.shade400, size: 22),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'No Ranks Found',
+                            const SizedBox(height: 4),
+                            Text(
+                              'Score',
                               style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 10,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const Text(
+                              '461.21',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF2A3BD4),
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Rank',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey.shade500,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            const Text(
+                              '#15,121',
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ],
                         ),
-                        btnText: 'Calculate Rank',
+                        btnText: 'View Details',
                         onTap: _showRankCalculatorModal,
                       ),
                       const SizedBox(height: 12),
 
-                      // Video Lecture
+                      // 5. Video Lecture Card
                       _buildGridCard(
                         icon: Icons.videocam_outlined,
                         title: 'Video Lecture',
                         content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.movie_creation_outlined,
-                                  color: Colors.grey.shade400, size: 22),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              '5 Lectures Watched',
+                            const SizedBox(height: 2),
+                            Text(
+                              'Continue Watching',
                               style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 10,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 6),
+                            Container(
+                              height: 52,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF881337), Color(0xFF4C0519)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Linear Algebra\nFull Course',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 8.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white70,
+                                          height: 1.1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Icon(Icons.play_circle_fill_rounded,
+                                      color: Colors.white, size: 22),
+                                  Positioned(
+                                    bottom: 3,
+                                    right: 4,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 3, vertical: 1),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withValues(alpha: 0.7),
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      child: const Text(
+                                        '08:02',
+                                        style: TextStyle(
+                                          fontSize: 7.5,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                         btnText: 'Go to Video Lectures',
@@ -657,94 +864,144 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: Column(
                     children: [
-                      // Study Templates
+                      // 2. Study Templates Card
                       _buildGridCard(
                         icon: Icons.description_outlined,
                         title: 'Study Templates',
                         content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.menu_book_outlined,
-                                  color: Colors.grey.shade400, size: 22),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              '3 Active Templates',
+                            const SizedBox(height: 2),
+                            Text(
+                              'Active templates',
                               style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 10,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
+                            const SizedBox(height: 6),
+                            _buildTemplateRow(
+                              Icons.calculate_outlined,
+                              const Color(0xFFE0F2FE),
+                              const Color(0xFF0284C7),
+                              '8 Week Math Focus',
+                            ),
                             const SizedBox(height: 4),
+                            _buildTemplateRow(
+                              Icons.science_outlined,
+                              const Color(0xFFF0FDF4),
+                              const Color(0xFF16A34A),
+                              '2-Week Physics M...',
+                            ),
                           ],
                         ),
-                        btnText: 'View Study Templates',
+                        btnText: 'View All',
                         onTap: _showStudyTemplatesModal,
                       ),
                       const SizedBox(height: 12),
 
-                      // University Goal
+                      // 4. University Goal Card
                       _buildGridCard(
                         icon: Icons.school_outlined,
                         title: 'University Goal',
                         content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.school_outlined,
-                                  color: Colors.grey.shade400, size: 22),
-                            ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 2),
                             const Text(
                               'Boğaziçi University',
                               style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'Poppins',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Computer science',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.people_outline_rounded,
+                                    size: 11, color: Color(0xFF2A3BD4)),
+                                const SizedBox(width: 2),
+                                const Text('40',
+                                    style: TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1E293B))),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.track_changes_rounded,
+                                    size: 11, color: Color(0xFF0284C7)),
+                                const SizedBox(width: 2),
+                                const Text('461.2',
+                                    style: TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1E293B))),
+                              ],
+                            ),
+                            const SizedBox(width: 4),
+                            Row(
+                              children: [
+                                const Icon(Icons.military_tech_outlined,
+                                    size: 11, color: Color(0xFFEAB308)),
+                                const SizedBox(width: 2),
+                                const Text('#2,121',
+                                    style: TextStyle(
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1E293B))),
+                              ],
+                            ),
                           ],
                         ),
-                        btnText: 'Target Preference List',
+                        btnText: 'View Details',
                         onTap: _showPreferenceListModal,
                       ),
                       const SizedBox(height: 12),
 
-                      // Trial Exams
+                      // 6. Trial Exams Card
                       _buildGridCard(
                         icon: Icons.assignment_outlined,
                         title: 'Trial Exams',
                         content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: const Color(0xFFF1F3F9),
-                              child: Icon(Icons.edit_note_outlined,
-                                  color: Colors.grey.shade400, size: 22),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'No Trial Exams Taken',
+                            const SizedBox(height: 2),
+                            Text(
+                              'Next Up',
                               style: TextStyle(
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.textPrimary,
+                                fontSize: 10,
+                                color: Colors.grey.shade500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
+                            const SizedBox(height: 6),
+                            _buildTemplateRow(
+                              Icons.biotech_outlined,
+                              const Color(0xFFF0FDF4),
+                              const Color(0xFF16A34A),
+                              'Biology Trial Exams',
+                            ),
                             const SizedBox(height: 4),
+                            _buildTemplateRow(
+                              Icons.calculate_outlined,
+                              const Color(0xFFE0F2FE),
+                              const Color(0xFF0284C7),
+                              'Maths Trial Exams',
+                            ),
                           ],
                         ),
                         btnText: 'Go to Trial Exams',
@@ -766,51 +1023,426 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 14),
 
             // ── 6. Question Bank Banner ──────────────────────────────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade100),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE1F5FE),
-                      borderRadius: BorderRadius.circular(10),
+            GestureDetector(
+              onTap: () {
+                _showFeatureInfoDialog(
+                  title: 'Personalized Question Bank',
+                  description:
+                      'Generate and print custom question banks structured around your weak topics and ÖSYM past question models.',
+                  icon: Icons.auto_stories_rounded,
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                    child: const Icon(Icons.menu_book_rounded,
-                        color: Color(0xFF0288D1), size: 22),
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Text(
-                      'Create a personalized Question Bank',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                        fontFamily: 'Poppins',
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0F2FE),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.book_rounded,
+                          color: Color(0xFF0284C7), size: 24),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Text(
+                        'Create a personalized Question Bank',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1E293B),
+                          fontFamily: 'Poppins',
+                        ),
                       ),
                     ),
-                  ),
-                  Icon(Icons.chevron_right_rounded,
-                      color: Colors.grey.shade400, size: 22),
-                ],
+                  ],
+                ),
               ),
             ).animate().fadeIn(delay: 250.ms),
           ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Modal: Exam Countdown Details ──────────────────────────────────────────
+  void _showExamCountdownModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: EdgeInsets.fromLTRB(
+            22, 16, 22, MediaQuery.of(ctx).padding.bottom + 24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEEF2FF),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.event_available_rounded,
+                    color: Color(0xFF2A3BD4),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Exam Countdown',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1E293B),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      Text(
+                        'YKS (TYT & AYT) 2026 Target',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF64748B),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Text(
+                    '16 Days Left',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2A3BD4),
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            // Exam Sessions breakdown card
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Column(
+                children: [
+                  _buildExamSessionRow('TYT Session', '14 June 2026', '10:15 AM',
+                      const Color(0xFF2A3BD4)),
+                  const Divider(height: 16, color: Color(0xFFE2E8F0)),
+                  _buildExamSessionRow('AYT Session', '15 June 2026', '10:15 AM',
+                      const Color(0xFF0284C7)),
+                  const Divider(height: 16, color: Color(0xFFE2E8F0)),
+                  _buildExamSessionRow('YDT Session', '15 June 2026', '03:45 PM',
+                      const Color(0xFF7C3AED)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SmartStudyPlanScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2A3BD4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'View Smart Study Plan',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExamSessionRow(
+      String title, String date, String time, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              date,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            Text(
+              time,
+              style: TextStyle(
+                fontSize: 10.5,
+                color: Colors.grey.shade500,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ─── Modal: Edit Daily Question Goal ────────────────────────────────────────
+  void _showDailyGoalPickerModal() {
+    final progress = context.read<ProgressProvider>();
+    int selectedGoal = progress.dailyGoal;
+    final goals = [5, 10, 15, 20, 25, 30, 40, 50];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) => Container(
+          padding: EdgeInsets.fromLTRB(
+              22, 16, 22, MediaQuery.of(ctx).padding.bottom + 24),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEEF2FF),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.track_changes_rounded,
+                      color: Color(0xFF2A3BD4),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Set Daily Goal',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1E293B),
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                        Text(
+                          'How many questions to solve each day?',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF64748B),
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Grid of quick goals
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.4,
+                ),
+                itemCount: goals.length,
+                itemBuilder: (_, i) {
+                  final g = goals[i];
+                  final isSelected = selectedGoal == g;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setModalState(() {
+                        selectedGoal = g;
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF2A3BD4)
+                            : const Color(0xFFF8FAFC),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF2A3BD4)
+                              : const Color(0xFFE2E8F0),
+                          width: 1.5,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$g',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: isSelected
+                              ? Colors.white
+                              : const Color(0xFF1E293B),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 22),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await progress.updateDailyGoal(selectedGoal);
+                    if (context.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Daily goal updated to $selectedGoal questions!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2A3BD4),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    'Save Goal',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1703,7 +2335,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: const Color(0xFFEBF0FE),
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
@@ -1712,7 +2344,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: const TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Color(0xFF2A3BD4),
                   fontFamily: 'Poppins',
                 ),
                 maxLines: 1,
@@ -1722,6 +2354,139 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  // ─── Pending Task Item (My Plan section) ────────────────────────────────────
+
+  Widget _buildPendingTaskItem({
+    required String title,
+    required String tier,
+    required Color tierBg,
+    required Color tierFg,
+    required String duration,
+    required Color iconBg,
+    required Color iconColor,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          // Checkbox circle
+          Container(
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Subject icon
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: iconBg,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: iconColor, size: 18),
+          ),
+          const SizedBox(width: 10),
+          // Title
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 6),
+          // Tier pill
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+            decoration: BoxDecoration(
+              color: tierBg,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: Text(
+              tier,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: tierFg,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Duration
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.access_time_rounded,
+                  size: 11, color: Colors.grey.shade400),
+              const SizedBox(width: 2),
+              Text(
+                duration,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey.shade500,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 4),
+          const Icon(Icons.chevron_right_rounded,
+              size: 16, color: Color(0xFF94A3B8)),
+        ],
+      ),
+    );
+  }
+
+  // ─── Template Row (Study Templates & Trial Exams cards) ────────────────────
+
+  Widget _buildTemplateRow(
+    IconData icon,
+    Color iconBg,
+    Color iconColor,
+    String title,
+  ) {
+    return Row(
+      children: [
+        Container(
+          width: 22,
+          height: 22,
+          decoration: BoxDecoration(
+            color: iconBg,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Icon(icon, color: iconColor, size: 13),
+        ),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF1E293B),
+              fontFamily: 'Poppins',
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -1737,12 +2502,15 @@ class _HomeScreenState extends State<HomeScreen> {
   // ─── Bottom Navigation ──────────────────────────────────────────────────────
 
   Widget _buildBottomNav() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final navBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: navBg,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.05),
             blurRadius: 16,
             offset: const Offset(0, -2),
           ),
@@ -1752,9 +2520,9 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: _selectedTab,
         onTap: (i) => setState(() => _selectedTab = i),
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey.shade400,
+        backgroundColor: navBg,
+        selectedItemColor: const Color(0xFF3B4CE8),
+        unselectedItemColor: isDark ? const Color(0xFF64748B) : Colors.grey.shade400,
         selectedLabelStyle: const TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
@@ -1790,21 +2558,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDrawer(User? user, AuthService auth) {
     final name = user?.displayName ?? 'Harsh Jain';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final drawerBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final textPrimary = isDark ? Colors.white : AppColors.textPrimary;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
 
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: drawerBg,
       child: SafeArea(
         child: Column(
           children: [
             // 1. Profile Header
             Container(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: Color(0xFFF1F5F9), width: 1),
+                  bottom: BorderSide(color: borderColor, width: 1),
                 ),
               ),
-              child: Row(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileScreen(),
+                    ),
+                  );
+                },
+                child: Row(
                 children: [
                   Container(
                     width: 48,
@@ -1835,16 +2617,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Text(
                               name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
+                                color: textPrimary,
                                 fontFamily: 'Poppins',
                               ),
                             ),
                             const SizedBox(width: 4),
                             Icon(Icons.chevron_right_rounded,
-                                size: 16, color: Colors.grey.shade600),
+                                size: 16, color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600),
                           ],
                         ),
                         const SizedBox(height: 2),
@@ -1862,6 +2644,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+          ),
 
             // 2. Menu Items (Scrollable)
             Expanded(
@@ -1996,6 +2779,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             'High-yield formula cheat sheets, concept maps, and summary notes for all TYT & AYT topics.',
                         icon: Icons.edit_note_rounded,
                       );
+                    },
+                  ),
+
+                  // Yearly Planner
+                  _buildDrawerItem(
+                    icon: Icons.event_note_rounded,
+                    title: 'Yearly Planner',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showYearlyPlannerDialog();
                     },
                   ),
 
@@ -2896,7 +3689,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+                    Expanded(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1E293B),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
                       decoration: BoxDecoration(color: tagColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(4)),
@@ -3142,120 +3948,7 @@ class _SolvedQuestionsTab extends StatefulWidget {
 }
 
 class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
-  final bool _hasData = true;
-
-  // Mock data grouped by day
-  final List<Map<String, dynamic>> _days = [
-    {
-      'date': 'Today',
-      'totalSolved': 48,
-      'time': '04:26',
-      'topicCount': 4,
-      'correct': 40,
-      'incorrect': 6,
-      'unanswered': 2,
-      'expanded': true,
-      'avatars': 4,
-      'tests': [
-        {
-          'title': 'Linear Equations that has a lon...',
-          'subject': 'Mathematics',
-          'type': 'TYT',
-          'difficulty': 'Past Exam',
-          'diffColor': 0xFFEF4444,
-          'solved': 8,
-          'time': '00:26',
-          'correct': 8,
-          'incorrect': 1,
-          'unanswered': 1,
-        },
-        {
-          'title': 'Algebra',
-          'subject': 'Mathematics',
-          'type': 'AYT',
-          'difficulty': 'Easy',
-          'diffColor': 0xFF22C55E,
-          'solved': 8,
-          'time': '00:26',
-          'correct': 6,
-          'incorrect': 1,
-          'unanswered': 1,
-        },
-        {
-          'title': 'Probability',
-          'subject': 'Mathematics',
-          'type': 'AYT',
-          'difficulty': 'Easy',
-          'diffColor': 0xFF22C55E,
-          'solved': 8,
-          'time': '00:26',
-          'correct': 6,
-          'incorrect': 1,
-          'unanswered': 1,
-        },
-        {
-          'title': 'Pythagoras',
-          'subject': 'Mathematics',
-          'type': 'AYT',
-          'difficulty': 'Past Exam',
-          'diffColor': 0xFFEF4444,
-          'solved': 8,
-          'time': '00:26',
-          'correct': 6,
-          'incorrect': 1,
-          'unanswered': 1,
-        },
-      ],
-    },
-    {
-      'date': 'Yesterday',
-      'totalSolved': 48,
-      'time': '04:26',
-      'topicCount': 6,
-      'correct': 40,
-      'incorrect': 6,
-      'unanswered': 2,
-      'expanded': false,
-      'avatars': 5,
-      'tests': <Map<String, dynamic>>[],
-    },
-    {
-      'date': '12 Jun 2025',
-      'totalSolved': 48,
-      'time': '04:26',
-      'topicCount': 2,
-      'correct': 40,
-      'incorrect': 6,
-      'unanswered': 2,
-      'expanded': false,
-      'avatars': 2,
-      'tests': <Map<String, dynamic>>[],
-    },
-    {
-      'date': '11 Jun 2025',
-      'totalSolved': 48,
-      'time': '04:26',
-      'topicCount': 2,
-      'correct': 40,
-      'incorrect': 6,
-      'unanswered': 2,
-      'expanded': false,
-      'avatars': 2,
-      'tests': <Map<String, dynamic>>[],
-    },
-    {
-      'date': '10 Jun 2025',
-      'totalSolved': 48,
-      'time': '04:26',
-      'topicCount': 2,
-      'correct': 40,
-      'incorrect': 6,
-      'unanswered': 2,
-      'expanded': false,
-      'avatars': 2,
-      'tests': <Map<String, dynamic>>[],
-    },
-  ];
+  final Set<String> _expandedDays = {'Today'};
 
   String _formatCurrentDate() {
     final now = DateTime.now();
@@ -3267,87 +3960,164 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
     return '${weekdays[now.weekday - 1]}, ${now.day.toString().padLeft(2, '0')} ${months[now.month - 1]}';
   }
 
+  String _formatDateHeader(DateTime dt) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final itemDate = DateTime(dt.year, dt.month, dt.day);
+    final diff = today.difference(itemDate).inDays;
+
+    if (diff == 0) return 'Today';
+    if (diff == 1) return 'Yesterday';
+
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${dt.day.toString().padLeft(2, '0')} ${months[dt.month - 1]} ${dt.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
+    final progress = context.watch<ProgressProvider>();
     final user = auth.currentUser;
     final name = user?.displayName?.split(' ').first ?? 'Harsh';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+
+    final allTests = progress.solvedTests;
+
+    // Group tests by date label
+    final Map<String, List<SolvedTestRecord>> grouped = {};
+    for (final test in allTests) {
+      final key = _formatDateHeader(test.timestamp);
+      grouped.putIfAbsent(key, () => []).add(test);
+    }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: bgColor,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // Header
+            // ── Top Header ──
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Menu & Greeting
                   Row(
                     children: [
                       GestureDetector(
                         onTap: widget.onOpenDrawer,
-                        child: const Icon(Icons.notes_rounded,
-                            size: 26, color: Color(0xFF1E293B)),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(
+                            Icons.notes_rounded,
+                            size: 26,
+                            color: textPrimary,
+                          ),
+                        ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(_formatCurrentDate(),
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey.shade500,
-                                  fontFamily: 'Poppins')),
-                          Text('Welcome back, $name',
-                              style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF2A3BD4),
-                                  fontFamily: 'Poppins')),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Icon(Icons.notifications_none_rounded,
-                              color: Color(0xFF1E293B), size: 24),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                  color: Color(0xFFEF4444),
-                                  shape: BoxShape.circle),
+                          Text(
+                            _formatCurrentDate(),
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          Text(
+                            'Solved Questions ($name)',
+                            style: const TextStyle(
+                              fontSize: 15.5,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF2A3BD4),
+                              fontFamily: 'Poppins',
                             ),
                           ),
                         ],
                       ),
+                    ],
+                  ),
+
+                  // Actions: Bell + Avatar
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        ),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Icon(
+                              Icons.notifications_none_rounded,
+                              color: textPrimary,
+                              size: 24,
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFEF4444),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(width: 12),
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: const Color(0xFFE2E8F0), width: 1.5),
-                          image: user?.photoURL != null
-                              ? DecorationImage(
-                                  image: NetworkImage(user!.photoURL!),
-                                  fit: BoxFit.cover)
-                              : const DecorationImage(
-                                  image: NetworkImage(
-                                      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
-                                  fit: BoxFit.cover),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileScreen(),
+                          ),
+                        ),
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                              width: 1.5,
+                            ),
+                            image: user?.photoURL != null
+                                ? DecorationImage(
+                                    image: NetworkImage(user!.photoURL!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : const DecorationImage(
+                                    image: NetworkImage(
+                                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
                         ),
                       ),
                     ],
@@ -3357,7 +4127,9 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
             ),
 
             Expanded(
-              child: _hasData ? _buildSolvedList() : _buildEmptyState(),
+              child: allTests.isNotEmpty
+                  ? _buildSolvedList(grouped, cardColor, textPrimary, borderColor, isDark)
+                  : _buildEmptyState(cardColor, textPrimary, isDark),
             ),
           ],
         ),
@@ -3366,7 +4138,7 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
   }
 
   // ─── Empty State ──────────────────────────────────────────────────────────
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(Color cardColor, Color textPrimary, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -3375,56 +4147,63 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardColor,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 16)
+                  color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.08),
+                  blurRadius: 16,
+                )
               ],
             ),
-            child: const Icon(Icons.assignment_outlined,
-                size: 36, color: Color(0xFF2A3BD4)),
+            child: const Icon(
+              Icons.assignment_outlined,
+              size: 36,
+              color: Color(0xFF2A3BD4),
+            ),
           ),
           const SizedBox(height: 22),
-          const Text(
+          Text(
             'Start solving questions to see\nyour progress here.',
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1E293B),
-                fontFamily: 'Poppins',
-                height: 1.4),
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: textPrimary,
+              fontFamily: 'Poppins',
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 20),
           GestureDetector(
             onTap: widget.onSolveQuestions,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 28, vertical: 13),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 13),
               decoration: BoxDecoration(
                 color: const Color(0xFF2A3BD4),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                      color: const Color(0xFF2A3BD4).withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4))
+                    color: const Color(0xFF2A3BD4).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  )
                 ],
               ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.menu_book_rounded,
-                      color: Colors.white, size: 18),
+                  Icon(Icons.menu_book_rounded, color: Colors.white, size: 18),
                   SizedBox(width: 8),
-                  Text('Solve Questions',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          fontFamily: 'Poppins')),
+                  Text(
+                    'Solve Questions',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -3435,33 +4214,52 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
   }
 
   // ─── Solved List ──────────────────────────────────────────────────────────
-  Widget _buildSolvedList() {
+  Widget _buildSolvedList(
+    Map<String, List<SolvedTestRecord>> grouped,
+    Color cardColor,
+    Color textPrimary,
+    Color borderColor,
+    bool isDark,
+  ) {
+    final keys = grouped.keys.toList();
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      itemCount: _days.length,
+      itemCount: keys.length,
       itemBuilder: (context, index) {
-        final day = _days[index];
-        return _buildDayCard(day, index);
+        final dateKey = keys[index];
+        final tests = grouped[dateKey] ?? [];
+        return _buildDayCard(dateKey, tests, cardColor, textPrimary, borderColor, isDark);
       },
     );
   }
 
-  Widget _buildDayCard(Map<String, dynamic> day, int dayIndex) {
-    final expanded = day['expanded'] as bool;
-    final tests = day['tests'] as List<Map<String, dynamic>>;
+  Widget _buildDayCard(
+    String dateKey,
+    List<SolvedTestRecord> tests,
+    Color cardColor,
+    Color textPrimary,
+    Color borderColor,
+    bool isDark,
+  ) {
+    final expanded = _expandedDays.contains(dateKey);
+    final totalSolved = tests.fold<int>(0, (sum, t) => sum + t.totalQuestions);
+    final totalCorrect = tests.fold<int>(0, (sum, t) => sum + t.correct);
+    final totalIncorrect = tests.fold<int>(0, (sum, t) => sum + t.incorrect);
+    final totalUnanswered = tests.fold<int>(0, (sum, t) => sum + t.unanswered);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2))
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          )
         ],
       ),
       child: Column(
@@ -3469,8 +4267,15 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
         children: [
           // Day Header (tappable to expand/collapse)
           GestureDetector(
-            onTap: () =>
-                setState(() => _days[dayIndex]['expanded'] = !expanded),
+            onTap: () {
+              setState(() {
+                if (expanded) {
+                  _expandedDays.remove(dateKey);
+                } else {
+                  _expandedDays.add(dateKey);
+                }
+              });
+            },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
               child: Column(
@@ -3480,12 +4285,15 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(day['date'] as String,
-                          style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1E293B),
-                              fontFamily: 'Poppins')),
+                      Text(
+                        dateKey,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
                       Icon(
                         expanded
                             ? Icons.keyboard_arrow_up_rounded
@@ -3500,49 +4308,27 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                   // Stats row
                   Row(
                     children: [
-                      _miniStat(Icons.check_circle_outline_rounded,
-                          '${day['totalSolved']} Solved',
-                          const Color(0xFF64748B)),
+                      _miniStat(
+                        Icons.check_circle_outline_rounded,
+                        '$totalSolved Solved',
+                        const Color(0xFF64748B),
+                      ),
                       const SizedBox(width: 10),
-                      _miniStat(Icons.access_time_rounded,
-                          day['time'] as String,
-                          const Color(0xFF64748B)),
+                      _miniStat(
+                        Icons.topic_outlined,
+                        '${tests.length} Tests',
+                        const Color(0xFF64748B),
+                      ),
                       const SizedBox(width: 10),
-                      // Avatar stack
-                      SizedBox(
-                        width: 40,
-                        height: 20,
-                        child: Stack(
-                          children: List.generate(
-                            (day['avatars'] as int).clamp(0, 3),
-                            (i) => Positioned(
-                              left: i * 12.0,
-                              child: Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: [
-                                    const Color(0xFF3B4CE8),
-                                    const Color(0xFFF59E0B),
-                                    const Color(0xFFEF4444),
-                                  ][i % 3],
-                                  border: Border.all(
-                                      color: Colors.white, width: 1.5),
-                                ),
-                                child: const Icon(Icons.person,
-                                    size: 11, color: Colors.white),
-                              ),
-                            ),
-                          ),
+                      Text(
+                        'Acc: ${totalSolved > 0 ? ((totalCorrect / totalSolved) * 100).toInt() : 0}%',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF16A34A),
+                          fontFamily: 'Poppins',
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      Text('From ${day['topicCount']} Topics',
-                          style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFF64748B),
-                              fontFamily: 'Poppins')),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -3550,14 +4336,11 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                   // Correct / Incorrect / Unanswered pills
                   Row(
                     children: [
-                      _resultPill(const Color(0xFF22C55E),
-                          '${day['correct']} Correct'),
+                      _resultPill(const Color(0xFF22C55E), '$totalCorrect Correct', textPrimary),
                       const SizedBox(width: 8),
-                      _resultPill(const Color(0xFFEF4444),
-                          '${day['incorrect']} Incorrect'),
+                      _resultPill(const Color(0xFFEF4444), '$totalIncorrect Incorrect', textPrimary),
                       const SizedBox(width: 8),
-                      _resultPill(const Color(0xFFF59E0B),
-                          '${day['unanswered']} Unanswered'),
+                      _resultPill(const Color(0xFFF59E0B), '$totalUnanswered Unanswered', textPrimary),
                     ],
                   ),
                 ],
@@ -3567,8 +4350,8 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
 
           // Expanded tests
           if (expanded && tests.isNotEmpty) ...[
-            const Divider(height: 1, color: Color(0xFFF1F5F9)),
-            ...tests.map((test) => _buildTestRow(test, dayIndex)),
+            Divider(height: 1, color: borderColor),
+            ...tests.map((test) => _buildTestRow(test, textPrimary, borderColor, isDark)),
           ],
         ],
       ),
@@ -3581,139 +4364,211 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
       children: [
         Icon(icon, size: 13, color: color),
         const SizedBox(width: 3),
-        Text(text,
-            style: TextStyle(
-                fontSize: 11,
-                color: color,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w500)),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 11,
+            color: color,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _resultPill(Color color, String text) {
+  Widget _resultPill(Color color, String text, Color textColor) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 4),
-        Text(text,
-            style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1E293B),
-                fontFamily: 'Poppins')),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+            color: textColor,
+            fontFamily: 'Poppins',
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildTestRow(Map<String, dynamic> test, int dayIndex) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Test icon
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(8),
+  Widget _buildTestRow(
+    SolvedTestRecord test,
+    Color textPrimary,
+    Color borderColor,
+    bool isDark,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TestResultScreen(
+              testTitle: test.title,
+              totalQuestions: test.totalQuestions,
+              correct: test.correct,
+              incorrect: test.incorrect,
+              unanswered: test.unanswered,
+              timeTakenSeconds: 480,
             ),
-            child: const Icon(Icons.description_outlined,
-                size: 18, color: Color(0xFF64748B)),
           ),
-          const SizedBox(width: 10),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 10, 8, 10),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: borderColor, width: 0.8)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Test icon
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                Icons.description_outlined,
+                size: 18,
+                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+              ),
+            ),
+            const SizedBox(width: 10),
 
-          // Test details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(test['title'] as String,
+            // Test details
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    test.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E293B),
-                        fontFamily: 'Poppins')),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    _tagChip(test['subject'] as String,
-                        const Color(0xFFEDE9FE), const Color(0xFF7C3AED)),
-                    const SizedBox(width: 6),
-                    _tagChip(test['type'] as String,
-                        const Color(0xFFDCFCE7), const Color(0xFF16A34A)),
-                    const SizedBox(width: 6),
-                    _tagChip(
-                        test['difficulty'] as String,
-                        Color(test['diffColor'] as int).withValues(alpha: 0.12),
-                        Color(test['diffColor'] as int)),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    _miniStat(Icons.check_circle_outline_rounded,
-                        '${test['solved']} Solved', const Color(0xFF64748B)),
-                    const SizedBox(width: 10),
-                    _miniStat(Icons.access_time_rounded,
-                        test['time'] as String, const Color(0xFF64748B)),
-                    const Spacer(),
-                    // Small result dots
-                    _dotCount(const Color(0xFF22C55E), test['correct'] as int),
-                    const SizedBox(width: 4),
-                    _dotCount(const Color(0xFFEF4444), test['incorrect'] as int),
-                    const SizedBox(width: 4),
-                    _dotCount(const Color(0xFFF59E0B), test['unanswered'] as int),
-                  ],
-                ),
+                    style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      _tagChip(
+                        test.subject,
+                        const Color(0xFFEDE9FE),
+                        const Color(0xFF7C3AED),
+                      ),
+                      const SizedBox(width: 6),
+                      _tagChip(
+                        test.type,
+                        const Color(0xFFDCFCE7),
+                        const Color(0xFF16A34A),
+                      ),
+                      const SizedBox(width: 6),
+                      _tagChip(
+                        test.difficulty,
+                        Color(test.diffColor).withValues(alpha: 0.12),
+                        Color(test.diffColor),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      _miniStat(
+                        Icons.check_circle_outline_rounded,
+                        '${test.totalQuestions} Solved',
+                        const Color(0xFF64748B),
+                      ),
+                      const SizedBox(width: 10),
+                      _miniStat(
+                        Icons.access_time_rounded,
+                        test.timeSpent,
+                        const Color(0xFF64748B),
+                      ),
+                      const Spacer(),
+                      // Score chip
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF16A34A).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${test.correct}/${test.totalQuestions} Correct',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF16A34A),
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // 3-dot menu
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert_rounded, size: 18, color: Color(0xFF94A3B8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              onSelected: (val) {
+                if (val == 'view') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TestResultScreen(
+                        testTitle: test.title,
+                        totalQuestions: test.totalQuestions,
+                        correct: test.correct,
+                        incorrect: test.incorrect,
+                        unanswered: test.unanswered,
+                        timeTakenSeconds: 480,
+                      ),
+                    ),
+                  );
+                } else if (val == 'resolve') {
+                  _showWarningDialog(
+                    icon: Icons.refresh_rounded,
+                    iconColor: const Color(0xFFF59E0B),
+                    title: 'Solve Again',
+                    message: 'Would you like to restart and practice this test again?',
+                    actionText: 'Start Test',
+                    actionColor: const Color(0xFF2A3BD4),
+                  );
+                } else if (val == 'delete') {
+                  _showWarningDialog(
+                    icon: Icons.delete_outline_rounded,
+                    iconColor: const Color(0xFFEF4444),
+                    title: 'Delete Record',
+                    message: 'Are you sure you want to remove this test session from history?',
+                    actionText: 'Delete',
+                    actionColor: const Color(0xFFEF4444),
+                  );
+                }
+              },
+              itemBuilder: (_) => [
+                _popupItem('view', Icons.visibility_outlined, 'View Details'),
+                _popupItem('resolve', Icons.refresh_rounded, 'Solve Again'),
+                _popupItem('delete', Icons.delete_outline_rounded, 'Delete'),
               ],
             ),
-          ),
-
-          // 3-dot menu
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert_rounded,
-                size: 18, color: Color(0xFF94A3B8)),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onSelected: (val) {
-              if (val == 'delete') {
-                _showWarningDialog(
-                  icon: Icons.delete_outline_rounded,
-                  iconColor: const Color(0xFFEF4444),
-                  title: 'Warning',
-                  message:
-                      'If you delete this test record, you will lose all related\nnotes, favorites, etc.',
-                  actionText: 'Delete',
-                  actionColor: const Color(0xFFEF4444),
-                );
-              } else if (val == 'resolve') {
-                _showWarningDialog(
-                  icon: Icons.refresh_rounded,
-                  iconColor: const Color(0xFFF59E0B),
-                  title: 'Warning',
-                  message:
-                      'Are you sure you want to re-solve this test, you will lose all\nrelated notes, favorites, etc.',
-                  actionText: 'Re-solve',
-                  actionColor: const Color(0xFF2A3BD4),
-                );
-              }
-            },
-            itemBuilder: (_) => [
-              _popupItem('view', Icons.visibility_outlined, 'View'),
-              _popupItem('resolve', Icons.refresh_rounded, 'Solve Again'),
-              _popupItem('delete', Icons.delete_outline_rounded, 'Delete'),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -3747,25 +4602,6 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
               fontWeight: FontWeight.w600,
               color: fg,
               fontFamily: 'Poppins')),
-    );
-  }
-
-  Widget _dotCount(Color color, int count) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 2),
-        Text('$count',
-            style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: color,
-                fontFamily: 'Poppins')),
-      ],
     );
   }
 

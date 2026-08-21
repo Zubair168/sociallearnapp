@@ -23,13 +23,19 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Firebase init with timeout safety net
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).timeout(const Duration(seconds: 15));
+  } catch (e) {
+    // Firebase failed / timed out — app still starts, auth gate shows welcome
+    debugPrint('[main] Firebase init error: $e');
+  }
 
-  // Initialize Notification Service
+  // Create notification service instance (do NOT await initialize here —
+  // FCM getToken / subscribeToTopic can block forever without network)
   final notificationService = NotificationService();
-  await notificationService.initialize();
 
   runApp(
     MultiProvider(
@@ -43,7 +49,13 @@ void main() async {
       child: const SocialLearnApp(),
     ),
   );
+
+  // Initialize notifications in the background AFTER the app is running
+  notificationService.initialize().catchError((e) {
+    debugPrint('[main] Notification init error: $e');
+  });
 }
+
 
 class SocialLearnApp extends StatelessWidget {
   const SocialLearnApp({super.key});

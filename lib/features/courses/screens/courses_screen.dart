@@ -5,6 +5,8 @@ import 'package:sociallearnapp/features/auth/services/auth_service.dart';
 import 'package:sociallearnapp/features/courses/models/course_model.dart';
 import 'package:sociallearnapp/features/courses/screens/subject_topics_screen.dart';
 import 'package:sociallearnapp/features/courses/widgets/course_subject_icon.dart';
+import 'package:sociallearnapp/features/notifications/screens/notifications_screen.dart';
+import 'package:sociallearnapp/features/profile/screens/profile_screen.dart';
 
 class CourseSubjectItem {
   final String title;
@@ -289,9 +291,15 @@ class _CoursesScreenState extends State<CoursesScreen>
     final user = auth.currentUser;
     final name = user?.displayName?.split(' ').first ?? 'Harsh';
     final dateStr = _formatCurrentDate();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFAFC);
+    final cardColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAFC),
+      backgroundColor: bgColor,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -315,10 +323,10 @@ class _CoursesScreenState extends State<CoursesScreen>
                               color: Colors.transparent,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.notes_rounded,
                               size: 26,
-                              color: Color(0xFF1E293B),
+                              color: textPrimary,
                             ),
                           ),
                         ),
@@ -331,17 +339,17 @@ class _CoursesScreenState extends State<CoursesScreen>
                               dateStr,
                               style: TextStyle(
                                 fontSize: 11.5,
-                                color: Colors.grey.shade500,
+                                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'Poppins',
                               ),
                             ),
                             Text(
                               'Welcome back, $name',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF2A3BD4),
+                                color: const Color(0xFF2A3BD4),
                                 fontFamily: 'Poppins',
                               ),
                             ),
@@ -354,58 +362,74 @@ class _CoursesScreenState extends State<CoursesScreen>
                     Row(
                       children: [
                         // Bell with red dot
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              width: 38,
-                              height: 38,
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.notifications_none_rounded,
-                                color: Color(0xFF1E293B),
-                                size: 24,
-                              ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationsScreen(),
                             ),
-                            Positioned(
-                              top: 6,
-                              right: 6,
-                              child: Container(
-                                width: 8,
-                                height: 8,
+                          ),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                width: 38,
+                                height: 38,
                                 decoration: const BoxDecoration(
-                                  color: Color(0xFFEF4444),
                                   shape: BoxShape.circle,
                                 ),
+                                child: Icon(
+                                  Icons.notifications_none_rounded,
+                                  color: textPrimary,
+                                  size: 24,
+                                ),
                               ),
-                            ),
-                          ],
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFEF4444),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(width: 8),
 
                         // Profile Avatar
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: const Color(0xFFE2E8F0),
-                              width: 1.5,
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileScreen(),
                             ),
-                            image: user?.photoURL != null
-                                ? DecorationImage(
-                                    image: NetworkImage(user!.photoURL!),
-                                    fit: BoxFit.cover,
-                                  )
-                                : const DecorationImage(
-                                    image: NetworkImage(
-                                      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+                          ),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                                width: 1.5,
+                              ),
+                              image: user?.photoURL != null
+                                  ? DecorationImage(
+                                      image: NetworkImage(user!.photoURL!),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const DecorationImage(
+                                      image: NetworkImage(
+                                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+                                      ),
+                                      fit: BoxFit.cover,
                                     ),
-                                    fit: BoxFit.cover,
-                                  ),
+                            ),
                           ),
                         ),
                       ],
@@ -417,11 +441,11 @@ class _CoursesScreenState extends State<CoursesScreen>
 
             // ── Tab Bar (TYT / AYT) ──────────────────────────────────────────
             Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: cardColor,
                 border: Border(
                   bottom: BorderSide(
-                    color: Color(0xFFE2E8F0),
+                    color: borderColor,
                     width: 1.0,
                   ),
                 ),
@@ -457,8 +481,8 @@ class _CoursesScreenState extends State<CoursesScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  _buildCourseGrid(_tytSubjects, 'TYT'),
-                  _buildCourseGrid(_aytSubjects, 'AYT'),
+                  _buildCourseGrid(_tytSubjects, 'TYT', cardColor, textPrimary, borderColor, isDark),
+                  _buildCourseGrid(_aytSubjects, 'AYT', cardColor, textPrimary, borderColor, isDark),
                 ],
               ),
             ),
@@ -469,7 +493,14 @@ class _CoursesScreenState extends State<CoursesScreen>
   }
 
   // ─── 2-Column Grid of Course Cards ────────────────────────────────────────
-  Widget _buildCourseGrid(List<CourseSubjectItem> subjects, String category) {
+  Widget _buildCourseGrid(
+    List<CourseSubjectItem> subjects,
+    String category,
+    Color cardColor,
+    Color textPrimary,
+    Color borderColor,
+    bool isDark,
+  ) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
       physics: const BouncingScrollPhysics(),
@@ -482,13 +513,21 @@ class _CoursesScreenState extends State<CoursesScreen>
       itemCount: subjects.length,
       itemBuilder: (context, index) {
         final item = subjects[index];
-        return _buildCourseCard(item, category, index);
+        return _buildCourseCard(item, category, index, cardColor, textPrimary, borderColor, isDark);
       },
     );
   }
 
   // ─── Single Course Card matching Screenshot ──────────────────────────────
-  Widget _buildCourseCard(CourseSubjectItem item, String category, int index) {
+  Widget _buildCourseCard(
+    CourseSubjectItem item,
+    String category,
+    int index,
+    Color cardColor,
+    Color textPrimary,
+    Color borderColor,
+    bool isDark,
+  ) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -504,15 +543,15 @@ class _CoursesScreenState extends State<CoursesScreen>
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFFF1F5F9),
+            color: borderColor,
             width: 1.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.025),
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.025),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -546,10 +585,10 @@ class _CoursesScreenState extends State<CoursesScreen>
                 // Subject Title
                 Text(
                   item.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1E293B),
+                    color: textPrimary,
                     fontFamily: 'Poppins',
                   ),
                   maxLines: 1,
@@ -563,7 +602,7 @@ class _CoursesScreenState extends State<CoursesScreen>
                     Icon(
                       Icons.description_outlined,
                       size: 12,
-                      color: Colors.grey.shade500,
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
@@ -571,8 +610,8 @@ class _CoursesScreenState extends State<CoursesScreen>
                         item.solvedText,
                         style: TextStyle(
                           fontSize: 10.5,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                          color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                           fontFamily: 'Poppins',
                         ),
                         maxLines: 1,
@@ -581,11 +620,11 @@ class _CoursesScreenState extends State<CoursesScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
 
-                // Green Progress Bar
+                // Progress Bar
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: item.progress.clamp(0.0, 1.0),
                     minHeight: 3.2,

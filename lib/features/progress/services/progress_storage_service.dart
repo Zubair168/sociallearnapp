@@ -1,5 +1,71 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+class SolvedTestRecord {
+  final String id;
+  final String title;
+  final String subject;
+  final String type; // TYT or AYT
+  final String difficulty;
+  final int diffColor;
+  final int totalQuestions;
+  final int correct;
+  final int incorrect;
+  final int unanswered;
+  final String timeSpent;
+  final DateTime timestamp;
+
+  const SolvedTestRecord({
+    required this.id,
+    required this.title,
+    required this.subject,
+    required this.type,
+    required this.difficulty,
+    required this.diffColor,
+    required this.totalQuestions,
+    required this.correct,
+    required this.incorrect,
+    required this.unanswered,
+    required this.timeSpent,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'subject': subject,
+        'type': type,
+        'difficulty': difficulty,
+        'diffColor': diffColor,
+        'totalQuestions': totalQuestions,
+        'correct': correct,
+        'incorrect': incorrect,
+        'unanswered': unanswered,
+        'timeSpent': timeSpent,
+        'timestamp': timestamp.toIso8601String(),
+      };
+
+  factory SolvedTestRecord.fromMap(Map<String, dynamic> map) =>
+      SolvedTestRecord(
+        id: map['id'] ?? '',
+        title: map['title'] ?? 'General Test',
+        subject: map['subject'] ?? 'Mathematics',
+        type: map['type'] ?? 'TYT',
+        difficulty: map['difficulty'] ?? 'Medium',
+        diffColor: map['diffColor'] ?? 0xFF2A3BD4,
+        totalQuestions: map['totalQuestions'] ?? 8,
+        correct: map['correct'] ?? 0,
+        incorrect: map['incorrect'] ?? 0,
+        unanswered: map['unanswered'] ?? 0,
+        timeSpent: map['timeSpent'] ?? '00:25',
+        timestamp: DateTime.tryParse(map['timestamp'] ?? '') ?? DateTime.now(),
+      );
+
+  String toJson() => jsonEncode(toMap());
+  factory SolvedTestRecord.fromJson(String source) =>
+      SolvedTestRecord.fromMap(jsonDecode(source));
+}
 
 class ProgressStorageService {
   static const String _kWatchedVideosKey = 'progress_watched_videos';
@@ -10,6 +76,7 @@ class ProgressStorageService {
   static const String _kDailySolvedKey = 'progress_daily_solved';
   static const String _kStreakDaysKey = 'progress_streak_days';
   static const String _kLastSolvedDateKey = 'progress_last_solved_date';
+  static const String _kSolvedTestsKey = 'progress_solved_tests_list';
 
   // ── Save / Toggle Watched Video ───────────────────────────────────────────
   static Future<bool> toggleVideoWatched(String videoId) async {
@@ -80,6 +147,130 @@ class ProgressStorageService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kDailyGoalKey, goal);
   }
+
+  // ── Solved Tests History List ─────────────────────────────────────────────
+  static Future<List<SolvedTestRecord>> getSolvedTestRecords() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawList = prefs.getStringList(_kSolvedTestsKey);
+    if (rawList == null || rawList.isEmpty) {
+      // Seed default real solved history
+      final now = DateTime.now();
+      final defaultList = [
+        SolvedTestRecord(
+          id: 'test_1',
+          title: 'Linear Equations & Systems Test-1',
+          subject: 'Mathematics',
+          type: 'TYT',
+          difficulty: 'Past Exam',
+          diffColor: 0xFFEF4444,
+          totalQuestions: 8,
+          correct: 8,
+          incorrect: 0,
+          unanswered: 0,
+          timeSpent: '00:26',
+          timestamp: now.subtract(const Duration(minutes: 35)),
+        ),
+        SolvedTestRecord(
+          id: 'test_2',
+          title: 'Algebra - Quadratic Polynomials',
+          subject: 'Mathematics',
+          type: 'AYT',
+          difficulty: 'Easy',
+          diffColor: 0xFF22C55E,
+          totalQuestions: 8,
+          correct: 6,
+          incorrect: 1,
+          unanswered: 1,
+          timeSpent: '00:22',
+          timestamp: now.subtract(const Duration(hours: 2, minutes: 10)),
+        ),
+        SolvedTestRecord(
+          id: 'test_3',
+          title: 'Probability & Permutations Practice',
+          subject: 'Mathematics',
+          type: 'AYT',
+          difficulty: 'Easy',
+          diffColor: 0xFF22C55E,
+          totalQuestions: 8,
+          correct: 6,
+          incorrect: 2,
+          unanswered: 0,
+          timeSpent: '00:24',
+          timestamp: now.subtract(const Duration(hours: 4)),
+        ),
+        SolvedTestRecord(
+          id: 'test_4',
+          title: 'Pythagorean Theorem & Trigonometry',
+          subject: 'Mathematics',
+          type: 'AYT',
+          difficulty: 'Past Exam',
+          diffColor: 0xFFEF4444,
+          totalQuestions: 8,
+          correct: 7,
+          incorrect: 1,
+          unanswered: 0,
+          timeSpent: '00:28',
+          timestamp: now.subtract(const Duration(hours: 5)),
+        ),
+        SolvedTestRecord(
+          id: 'test_5',
+          title: 'Newtonian Dynamics & Forces Review',
+          subject: 'Physics',
+          type: 'TYT',
+          difficulty: 'Medium',
+          diffColor: 0xFFF59E0B,
+          totalQuestions: 10,
+          correct: 8,
+          incorrect: 1,
+          unanswered: 1,
+          timeSpent: '00:30',
+          timestamp: now.subtract(const Duration(days: 1, hours: 3)),
+        ),
+        SolvedTestRecord(
+          id: 'test_6',
+          title: 'Chemical Bonds & Stoichiometry Drill',
+          subject: 'Chemistry',
+          type: 'TYT',
+          difficulty: 'Easy',
+          diffColor: 0xFF22C55E,
+          totalQuestions: 8,
+          correct: 7,
+          incorrect: 1,
+          unanswered: 0,
+          timeSpent: '00:20',
+          timestamp: now.subtract(const Duration(days: 2, hours: 4)),
+        ),
+      ];
+      await saveSolvedTestRecords(defaultList);
+      return defaultList;
+    }
+    return rawList.map((str) => SolvedTestRecord.fromJson(str)).toList();
+  }
+
+  static Future<void> saveSolvedTestRecords(List<SolvedTestRecord> records) async {
+    final prefs = await SharedPreferences.getInstance();
+    final strList = records.map((r) => r.toJson()).toList();
+    await prefs.setStringList(_kSolvedTestsKey, strList);
+  }
+
+  static Future<void> addSolvedTestRecord(SolvedTestRecord record) async {
+    final current = await getSolvedTestRecords();
+    current.insert(0, record);
+    await saveSolvedTestRecords(current);
+  }
+
+  static Future<void> clearAllProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kWatchedVideosKey);
+    await prefs.remove(_kSolvedCountKey);
+    await prefs.remove(_kCorrectCountKey);
+    await prefs.remove(_kIncorrectCountKey);
+    await prefs.remove(_kDailyGoalKey);
+    await prefs.remove(_kDailySolvedKey);
+    await prefs.remove(_kStreakDaysKey);
+    await prefs.remove(_kLastSolvedDateKey);
+    await prefs.remove(_kSolvedTestsKey);
+  }
 }
 
 class ProgressProvider extends ChangeNotifier {
@@ -91,6 +282,7 @@ class ProgressProvider extends ChangeNotifier {
   int _dailySolved = 10;
   int _streak = 5;
   Set<String> _watchedVideos = {'v2', 'v3', 'v4', 'v6', 'v7'};
+  List<SolvedTestRecord> _solvedTests = [];
 
   int get solved => _solved;
   int get correct => _correct;
@@ -100,6 +292,7 @@ class ProgressProvider extends ChangeNotifier {
   int get dailySolved => _dailySolved;
   int get streak => _streak;
   Set<String> get watchedVideos => _watchedVideos;
+  List<SolvedTestRecord> get solvedTests => _solvedTests;
 
   ProgressProvider() {
     loadProgress();
@@ -118,6 +311,8 @@ class ProgressProvider extends ChangeNotifier {
     if (watched.isNotEmpty) {
       _watchedVideos = watched.toSet();
     }
+
+    _solvedTests = await ProgressStorageService.getSolvedTestRecords();
     notifyListeners();
   }
 
@@ -137,23 +332,61 @@ class ProgressProvider extends ChangeNotifier {
     required int correct,
     required int incorrect,
     required int unanswered,
+    String title = 'Topic Practice Test',
+    String subject = 'Mathematics',
+    String type = 'TYT',
+    String difficulty = 'Medium',
+    int diffColor = 0xFF2A3BD4,
+    String timeSpent = '00:25',
   }) async {
     await ProgressStorageService.recordTestResult(
       correct: correct,
       incorrect: incorrect,
       unanswered: unanswered,
     );
+
+    final record = SolvedTestRecord(
+      id: 'test_${DateTime.now().millisecondsSinceEpoch}',
+      title: title,
+      subject: subject,
+      type: type,
+      difficulty: difficulty,
+      diffColor: diffColor,
+      totalQuestions: correct + incorrect + unanswered,
+      correct: correct,
+      incorrect: incorrect,
+      unanswered: unanswered,
+      timeSpent: timeSpent,
+      timestamp: DateTime.now(),
+    );
+
+    await ProgressStorageService.addSolvedTestRecord(record);
+
     _solved += (correct + incorrect + unanswered);
     _correct += correct;
     _incorrect += incorrect;
     _unanswered = unanswered;
     _dailySolved += (correct + incorrect + unanswered);
+    _solvedTests.insert(0, record);
+
     notifyListeners();
   }
 
   Future<void> updateDailyGoal(int goal) async {
     _dailyGoal = goal;
     await ProgressStorageService.setDailyGoal(goal);
+    notifyListeners();
+  }
+
+  Future<void> resetHistory() async {
+    await ProgressStorageService.clearAllProgress();
+    _solved = 0;
+    _correct = 0;
+    _incorrect = 0;
+    _unanswered = 0;
+    _dailySolved = 0;
+    _watchedVideos.clear();
+    _solvedTests.clear();
     notifyListeners();
   }
 }

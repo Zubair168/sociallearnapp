@@ -4,6 +4,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:sociallearnapp/features/auth/services/auth_service.dart';
 import 'package:sociallearnapp/features/courses/screens/favorited_questions_screen.dart';
+import 'package:sociallearnapp/features/notifications/screens/notifications_screen.dart';
+import 'package:sociallearnapp/features/profile/screens/profile_screen.dart';
 
 class StatsScreen extends StatefulWidget {
   final VoidCallback? onOpenDrawer;
@@ -37,15 +39,84 @@ class _StatsScreenState extends State<StatsScreen>
     'Geography',
   ];
 
+  final Map<String, Map<String, dynamic>> _courseStats = {
+    'All Courses': {
+      'solved': '1148',
+      'pct': '63%',
+      'time': '02:03',
+      'correct': 38,
+      'incorrect': 6,
+      'unanswered': 6,
+    },
+    'Mathematics': {
+      'solved': '342',
+      'pct': '72%',
+      'time': '01:45',
+      'correct': 45,
+      'incorrect': 3,
+      'unanswered': 2,
+    },
+    'Turkish': {
+      'solved': '280',
+      'pct': '68%',
+      'time': '01:30',
+      'correct': 32,
+      'incorrect': 8,
+      'unanswered': 4,
+    },
+    'Physics': {
+      'solved': '164',
+      'pct': '54%',
+      'time': '02:40',
+      'correct': 24,
+      'incorrect': 12,
+      'unanswered': 8,
+    },
+    'Chemistry': {
+      'solved': '145',
+      'pct': '61%',
+      'time': '02:10',
+      'correct': 28,
+      'incorrect': 7,
+      'unanswered': 5,
+    },
+    'Biology': {
+      'solved': '112',
+      'pct': '75%',
+      'time': '01:20',
+      'correct': 36,
+      'incorrect': 4,
+      'unanswered': 4,
+    },
+    'History': {
+      'solved': '65',
+      'pct': '80%',
+      'time': '01:15',
+      'correct': 40,
+      'incorrect': 5,
+      'unanswered': 2,
+    },
+    'Geography': {
+      'solved': '40',
+      'pct': '70%',
+      'time': '01:10',
+      'correct': 28,
+      'incorrect': 6,
+      'unanswered': 6,
+    },
+  };
+
   @override
   void initState() {
     super.initState();
     _donutController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 900),
     )..forward();
-    _donutAnim =
-        CurvedAnimation(parent: _donutController, curve: Curves.easeOut);
+    _donutAnim = CurvedAnimation(
+      parent: _donutController,
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -69,9 +140,13 @@ class _StatsScreenState extends State<StatsScreen>
     final auth = context.watch<AuthService>();
     final user = auth.currentUser;
     final name = user?.displayName?.split(' ').first ?? 'Harsh';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: bgColor,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -82,69 +157,93 @@ class _StatsScreenState extends State<StatsScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: widget.onOpenDrawer,
-                        child: const Icon(Icons.notes_rounded,
-                            size: 26, color: Color(0xFF1E293B)),
-                      ),
-                      const SizedBox(width: 10),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_formatCurrentDate(),
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey.shade500,
-                                  fontFamily: 'Poppins')),
-                          Text('Welcome back, $name',
-                              style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF2A3BD4),
-                                  fontFamily: 'Poppins')),
-                        ],
-                      ),
-                    ],
+                  Expanded(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: widget.onOpenDrawer,
+                          child: Icon(Icons.notes_rounded,
+                              size: 26, color: textPrimary),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_formatCurrentDate(),
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
+                                      fontFamily: 'Poppins'),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis),
+                              Text('Welcome back, $name',
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF2A3BD4),
+                                      fontFamily: 'Poppins'),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Row(
                     children: [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          const Icon(Icons.notifications_none_rounded,
-                              color: Color(0xFF1E293B), size: 24),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                  color: Color(0xFFEF4444),
-                                  shape: BoxShape.circle),
-                            ),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
                           ),
-                        ],
+                        ),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Icon(Icons.notifications_none_rounded,
+                                color: textPrimary, size: 24),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                    color: Color(0xFFEF4444),
+                                    shape: BoxShape.circle),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: const Color(0xFFE2E8F0), width: 1.5),
-                          image: user?.photoURL != null
-                              ? DecorationImage(
-                                  image: NetworkImage(user!.photoURL!),
-                                  fit: BoxFit.cover)
-                              : const DecorationImage(
-                                  image: NetworkImage(
-                                      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
-                                  fit: BoxFit.cover),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileScreen(),
+                          ),
+                        ),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 1.5),
+                            image: user?.photoURL != null
+                                ? DecorationImage(
+                                    image: NetworkImage(user!.photoURL!),
+                                    fit: BoxFit.cover)
+                                : const DecorationImage(
+                                    image: NetworkImage(
+                                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'),
+                                    fit: BoxFit.cover),
+                          ),
                         ),
                       ),
                     ],
@@ -240,6 +339,9 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildActiveState() {
+    final currentStats =
+        _courseStats[_selectedCourse] ?? _courseStats['All Courses']!;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 6, 16, 28),
@@ -279,11 +381,17 @@ class _StatsScreenState extends State<StatsScreen>
           // 3 Stat tiles
           Row(
             children: [
-              Expanded(child: _buildStatTile('Questions\nSolved', '1148')),
+              Expanded(
+                  child: _buildStatTile(
+                      'Questions\nSolved', currentStats['solved'] as String)),
               const SizedBox(width: 10),
-              Expanded(child: _buildStatTile('Correct\nPercentage', '63%')),
+              Expanded(
+                  child: _buildStatTile(
+                      'Correct\nPercentage', currentStats['pct'] as String)),
               const SizedBox(width: 10),
-              Expanded(child: _buildStatTile('Avg Solving\nTime', '02:03')),
+              Expanded(
+                  child: _buildStatTile(
+                      'Avg Solving\nTime', currentStats['time'] as String)),
             ],
           ).animate(delay: 60.ms).fadeIn(duration: 300.ms),
 
@@ -321,9 +429,9 @@ class _StatsScreenState extends State<StatsScreen>
                       builder: (context, _) => CustomPaint(
                         size: const Size(120, 120),
                         painter: _DonutChartPainter(
-                          correct: 38,
-                          incorrect: 6,
-                          unanswered: 6,
+                          correct: currentStats['correct'] as int,
+                          incorrect: currentStats['incorrect'] as int,
+                          unanswered: currentStats['unanswered'] as int,
                           progress: _donutAnim.value,
                         ),
                       ),
@@ -335,17 +443,17 @@ class _StatsScreenState extends State<StatsScreen>
                           _buildAnalysisRow(
                               color: const Color(0xFF22C55E),
                               label: 'Correct',
-                              value: '38'),
+                              value: '${currentStats['correct']}'),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
                           _buildAnalysisRow(
                               color: const Color(0xFFEF4444),
                               label: 'Incorrect',
-                              value: '6'),
+                              value: '${currentStats['incorrect']}'),
                           const Divider(height: 1, color: Color(0xFFF1F5F9)),
                           _buildAnalysisRow(
                               color: const Color(0xFFF59E0B),
                               label: 'Unanswered',
-                              value: '6'),
+                              value: '${currentStats['unanswered']}'),
                         ],
                       ),
                     ),
@@ -612,7 +720,11 @@ class _StatsScreenState extends State<StatsScreen>
           const SizedBox(height: 8),
           ..._courseOptions.map((c) => ListTile(
                 onTap: () {
-                  setState(() => _selectedCourse = c);
+                  setState(() {
+                    _selectedCourse = c;
+                    _donutController.reset();
+                    _donutController.forward();
+                  });
                   Navigator.pop(ctx);
                 },
                 title: Text(c,

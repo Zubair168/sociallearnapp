@@ -61,8 +61,11 @@ class NotificationService extends ChangeNotifier {
               AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(androidChannel);
 
-      // 3. Get FCM Token
-      final token = await _fcm.getToken();
+      // 3. Get FCM Token (with timeout — avoids hanging on slow network)
+      final token = await _fcm.getToken().timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => null,
+      );
       if (token != null && token.isNotEmpty) {
         _fcmToken = token;
         dev.log('Active FCM Device Token: $_fcmToken');
@@ -83,8 +86,11 @@ class NotificationService extends ChangeNotifier {
         _showForegroundNotification(message);
       });
 
-      // 6. Subscribe to new lessons topic
-      await _fcm.subscribeToTopic('new_lessons');
+      // 6. Subscribe to new lessons topic (with timeout)
+      await _fcm.subscribeToTopic('new_lessons').timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {},
+      );
 
       _isInitialized = true;
       notifyListeners();
