@@ -4,10 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:sociallearnapp/core/constants/app_colors.dart';
 import 'package:sociallearnapp/features/auth/services/auth_service.dart';
+import 'package:sociallearnapp/core/theme/theme_provider.dart';
 import 'package:sociallearnapp/features/courses/screens/courses_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/favorited_questions_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/smart_study_plan_screen.dart';
 import 'package:sociallearnapp/features/courses/screens/trial_exams_screen.dart';
+import 'package:sociallearnapp/features/notifications/services/notification_service.dart';
+import 'package:sociallearnapp/features/progress/services/progress_storage_service.dart';
 import 'package:sociallearnapp/features/stats/screens/stats_screen.dart';
 import 'package:sociallearnapp/features/video/screens/video_player_screen.dart';
 
@@ -345,66 +348,74 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          child: Consumer<ProgressProvider>(
+                            builder: (context, progress, _) {
+                              final current = progress.dailySolved;
+                              final goal = progress.dailyGoal;
+                              final pct = (current / (goal > 0 ? goal : 1)).clamp(0.0, 1.0);
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    'Daily Goal',
-                                    style: TextStyle(
-                                      fontSize: 10.5,
-                                      color: Colors.grey.shade500,
-                                      fontWeight: FontWeight.w500,
-                                      fontFamily: 'Poppins',
-                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Daily Goal',
+                                        style: TextStyle(
+                                          fontSize: 10.5,
+                                          color: Colors.grey.shade500,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        size: 13,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                    ],
                                   ),
-                                  Icon(
-                                    Icons.edit_outlined,
-                                    size: 13,
-                                    color: Colors.grey.shade400,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              RichText(
-                                text: const TextSpan(
-                                  text: '10 ',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF1E293B),
-                                    fontFamily: 'Poppins',
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Questions',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w400,
-                                        color: Color(0xFF64748B),
+                                  const SizedBox(height: 2),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: '$goal ',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1E293B),
                                         fontFamily: 'Poppins',
                                       ),
+                                      children: const [
+                                        TextSpan(
+                                          text: 'Questions',
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color(0xFF64748B),
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(3),
-                                child: const LinearProgressIndicator(
-                                  value: 0.45,
-                                  minHeight: 4,
-                                  backgroundColor: Color(0xFFE2E8F0),
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFF2A3BD4),
                                   ),
-                                ),
-                              ),
-                            ],
+                                  const SizedBox(height: 5),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(3),
+                                    child: LinearProgressIndicator(
+                                      value: pct,
+                                      minHeight: 4,
+                                      backgroundColor: const Color(0xFFE2E8F0),
+                                      valueColor: const AlwaysStoppedAnimation<Color>(
+                                        Color(0xFF2A3BD4),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -2017,6 +2028,73 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
 
+                  // Dark / Light Theme Toggle
+                  Consumer<ThemeProvider>(
+                    builder: (context, theme, _) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: theme.isDarkMode
+                              ? const Color(0xFF1E293B)
+                              : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: theme.isDarkMode
+                                ? const Color(0xFF334155)
+                                : const Color(0xFFE2E8F0),
+                          ),
+                        ),
+                        child: SwitchListTile(
+                          dense: true,
+                          secondary: Icon(
+                            theme.isDarkMode
+                                ? Icons.dark_mode_rounded
+                                : Icons.light_mode_rounded,
+                            color: theme.isDarkMode
+                                ? const Color(0xFFFBBF24)
+                                : const Color(0xFF2A3BD4),
+                            size: 20,
+                          ),
+                          title: Text(
+                            theme.isDarkMode ? 'Dark Mode' : 'Light Mode',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          value: theme.isDarkMode,
+                          onChanged: (val) => theme.toggleTheme(val),
+                        ),
+                      );
+                    },
+                  ),
+
+                  // Push Notification Tester
+                  _buildDrawerItem(
+                    icon: Icons.notifications_active_outlined,
+                    title: 'Test New Lesson Notification',
+                    onTap: () {
+                      Navigator.pop(context);
+                      final notif = context.read<NotificationService>();
+                      notif.showNewLessonNotification(
+                        title: 'Algebra – Introduction to Equations-2',
+                        subject: 'Mathematics',
+                        duration: '01:22',
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('🔔 Push notification sent!'),
+                          backgroundColor: const Color(0xFF2A3BD4),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      );
+                    },
+                  ),
+
                   // About
                   _buildDrawerItem(
                     icon: Icons.info_outline_rounded,
@@ -2155,85 +2233,121 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showLogoutConfirmationDialog(AuthService auth) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Top Drag Handle
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFEE2E2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.logout_rounded,
-                    color: Color(0xFFEF4444), size: 28),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Log Out',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
-                  fontFamily: 'Poppins',
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Are you sure you want to log out of EduVerse?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: Colors.grey.shade600,
-                  fontFamily: 'Poppins',
-                ),
+            ),
+            const SizedBox(height: 20),
+
+            // Red/Coral subtle icon circle
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFEE2E2),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+              child: const Icon(
+                Icons.logout_rounded,
+                color: Color(0xFFEF4444),
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            const Text(
+              'Log Out',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            Text(
+              'Are you sure you want to log out of your account?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Colors.grey.shade500,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 46),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text('Cancel',
-                          style: TextStyle(
-                              color: Color(0xFF64748B), fontFamily: 'Poppins')),
+                      side: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF64748B),
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        Navigator.pop(ctx);
-                        await auth.signOut();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 0,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(ctx);
+                      await auth.signOut();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFEF4444),
+                      minimumSize: const Size(double.infinity, 46),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Text('Log Out',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Poppins')),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Log Out',
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -2244,70 +2358,85 @@ class _HomeScreenState extends State<HomeScreen> {
     required String description,
     required IconData icon,
   }) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (ctx) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(22),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEFF4FF),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: const Color(0xFF2A3BD4), size: 30),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16.5,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
-                  fontFamily: 'Poppins',
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.5,
-                  color: Colors.grey.shade600,
-                  fontFamily: 'Poppins',
-                  height: 1.4,
-                ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 60,
+              height: 60,
+              decoration: const BoxDecoration(
+                color: Color(0xFFEFF4FF),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF2A3BD4),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    elevation: 0,
+              child: Icon(icon, color: const Color(0xFF2A3BD4), size: 30),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Colors.grey.shade600,
+                fontFamily: 'Poppins',
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2A3BD4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Text(
-                    'Got It',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Poppins',
-                    ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Got It',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                    fontSize: 14,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -3078,10 +3207,13 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.4),
       builder: (ctx) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 380),
+          padding: const EdgeInsets.fromLTRB(20, 24, 20, 18),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -3090,26 +3222,32 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.08),
+                  color: iconColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 32, color: iconColor),
+                child: Icon(icon, size: 30, color: iconColor),
               ),
-              const SizedBox(height: 16),
-              Text(title,
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: iconColor,
-                      fontFamily: 'Poppins')),
-              const SizedBox(height: 10),
-              Text(message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF64748B),
-                      fontFamily: 'Poppins',
-                      height: 1.4)),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: iconColor,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  color: Color(0xFF64748B),
+                  fontFamily: 'Poppins',
+                  height: 1.4,
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Buttons
@@ -3119,42 +3257,59 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(ctx),
                       style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 44),
+                        minimumSize: const Size(0, 46),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         side: const BorderSide(
-                            color: Color(0xFFE2E8F0), width: 1.5),
+                          color: Color(0xFFE2E8F0),
+                          width: 1.5,
+                        ),
                       ),
-                      child: const Text('Cancel',
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1E293B),
-                              fontFamily: 'Poppins')),
+                      child: const Text(
+                        'Cancel',
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E293B),
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Navigator.pop(ctx),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: actionColor,
-                        minimumSize: const Size(double.infinity, 44),
+                        minimumSize: const Size(0, 46),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         elevation: 0,
                       ),
-                      child: Text(actionText,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          actionText,
+                          maxLines: 1,
                           style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                              fontFamily: 'Poppins')),
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
 
               // Do not show again
               Row(
@@ -3167,16 +3322,20 @@ class _SolvedQuestionsTabState extends State<_SolvedQuestionsTab> {
                       value: false,
                       onChanged: (_) {},
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4)),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                       side: const BorderSide(color: Color(0xFFCBD5E1)),
                     ),
                   ),
                   const SizedBox(width: 6),
-                  const Text('Do not show again',
-                      style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF64748B),
-                          fontFamily: 'Poppins')),
+                  const Text(
+                    'Do not show again',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ],
               ),
             ],

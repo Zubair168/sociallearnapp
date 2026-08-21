@@ -1311,12 +1311,26 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
 
   void _playVideo(VideoLessonItem vid) {
     Navigator.pop(context);
+    final playlist = (_selectedVideoType?.videos ?? [])
+        .map(
+          (v) => RelatedVideoItem(
+            title: v.title,
+            duration: v.duration,
+            category: v.category,
+            videoUrl: v.videoUrl,
+            isWatched: v.isWatched,
+          ),
+        )
+        .toList();
+
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => VideoPlayerScreen(
           title: vid.title,
           videoUrl: vid.videoUrl,
+          category: vid.category,
+          relatedVideos: playlist.isNotEmpty ? playlist : null,
         ),
       ),
     );

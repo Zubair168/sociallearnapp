@@ -5,9 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_provider.dart';
 import 'features/auth/services/auth_service.dart';
 import 'features/courses/providers/course_provider.dart';
 import 'features/home/screens/home_screen.dart';
+import 'features/notifications/services/notification_service.dart';
+import 'features/progress/services/progress_storage_service.dart';
 import 'features/welcome/screens/welcome_screen.dart';
 import 'firebase_options.dart';
 
@@ -24,11 +27,18 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Initialize Notification Service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
+        ChangeNotifierProvider(create: (_) => ProgressProvider()),
+        ChangeNotifierProvider.value(value: notificationService),
       ],
       child: const SocialLearnApp(),
     ),
@@ -40,10 +50,14 @@ class SocialLearnApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
+
     return MaterialApp(
       title: 'EduVerse',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeProvider.themeMode,
       home: const _AuthGate(),
     );
   }
@@ -98,24 +112,8 @@ class _SplashScreen extends StatelessWidget {
                 fontFamily: 'Poppins',
               ),
             ),
-            SizedBox(height: 6),
-            Text(
-              'Learn • Connect • Excel',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-                fontFamily: 'Poppins',
-              ),
-            ),
-            SizedBox(height: 48),
-            SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2.5,
-              ),
-            ),
+            SizedBox(height: 24),
+            CircularProgressIndicator(color: Colors.white),
           ],
         ),
       ),

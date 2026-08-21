@@ -22,11 +22,16 @@ dependencies:
   # State management
   provider: ^6.1.2
 
-  # Firebase
+  # Firebase & Notifications
   firebase_core: ^3.14.0
   firebase_auth: ^5.6.0
   google_sign_in: ^6.2.2
   cloud_firestore: ^5.6.0
+  firebase_messaging: ^15.2.4
+  flutter_local_notifications: ^18.0.1
+
+  # Local Storage & Preferences
+  shared_preferences: ^2.3.5
 
   # Video
   video_player: ^2.9.5
