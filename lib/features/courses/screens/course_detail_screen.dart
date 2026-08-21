@@ -71,9 +71,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final course = widget.course;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final textPrimary = isDark ? Colors.white : AppColors.textPrimary;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffoldBg,
       body: CustomScrollView(
         slivers: [
           // ── Header with thumbnail ─────────────────────────────────
@@ -168,9 +171,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   const SizedBox(height: 12),
 
                   // Title
-                  Text(course.title, style: AppTextStyles.headlineLarge)
-                      .animate()
-                      .fadeIn(delay: 100.ms),
+                  Text(
+                    course.title,
+                    style: AppTextStyles.headlineLarge.copyWith(color: textPrimary),
+                  ).animate().fadeIn(delay: 100.ms),
                   const SizedBox(height: 8),
 
                   // Instructor
@@ -190,7 +194,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                       const SizedBox(width: 8),
                       Text(course.instructor,
                           style: AppTextStyles.bodyMedium
-                              .copyWith(fontWeight: FontWeight.w500)),
+                              .copyWith(fontWeight: FontWeight.w500, color: textPrimary)),
                     ],
                   ).animate().fadeIn(delay: 150.ms),
                   const SizedBox(height: 16),
@@ -216,17 +220,19 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   const SizedBox(height: 20),
 
                   // Divider
-                  const Divider(color: AppColors.divider),
+                  Divider(color: isDark ? const Color(0xFF334155) : AppColors.divider),
                   const SizedBox(height: 16),
 
                   // Description
                   Text('About this course',
-                          style: AppTextStyles.titleLarge)
+                          style: AppTextStyles.titleLarge.copyWith(color: textPrimary))
                       .animate()
                       .fadeIn(delay: 250.ms),
                   const SizedBox(height: 8),
                   Text(course.description,
-                          style: AppTextStyles.bodyLarge)
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: isDark ? const Color(0xFF94A3B8) : null,
+                          ))
                       .animate()
                       .fadeIn(delay: 280.ms),
                   const SizedBox(height: 32),
@@ -348,16 +354,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   }
 
   Widget _statChip(IconData icon, Color color, String label) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : AppColors.textPrimary;
     return Row(
       children: [
         Icon(icon, color: color, size: 16),
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
-            color: AppColors.textPrimary,
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),

@@ -64,8 +64,10 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : Colors.white;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: scaffoldBg,
       body: SafeArea(
         child: Stack(
           children: [
@@ -74,7 +76,7 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
                 // ── 1. Top Bar / Drawing Toolbar ─────────────────────────────
                 _buildTopToolbar(),
 
-                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                Divider(height: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
 
                 // ── 2. Question View Area with Drawing Canvas ────────────────
                 Expanded(
@@ -196,10 +198,14 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
                           width: 46,
                           height: 46,
                           decoration: BoxDecoration(
-                            color: isSel ? const Color(0xFFEEF2FF) : Colors.white,
+                            color: isSel
+                                ? const Color(0xFFEEF2FF)
+                                : isDark ? const Color(0xFF1E293B) : Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSel ? const Color(0xFF2A3BD4) : const Color(0xFFE2E8F0),
+                              color: isSel
+                                  ? const Color(0xFF2A3BD4)
+                                  : isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                               width: isSel ? 2 : 1,
                             ),
                             boxShadow: [
@@ -229,9 +235,9 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
                 // ── 4. Bottom Navigation Bar with Speed Dial ──────────────────
                 Container(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    border: Border(top: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9))),
                   ),
                   child: Row(
                     children: [
@@ -300,12 +306,12 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
                         width: 46,
                         height: 46,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
+                          color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF1E293B), size: 20),
+                          icon: Icon(Icons.more_vert_rounded, color: isDark ? Colors.white : const Color(0xFF1E293B), size: 20),
                           onPressed: () => setState(() => _isSpeedDialOpen = !_isSpeedDialOpen),
                         ),
                       ),
@@ -325,9 +331,11 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
 
   // ─── Top Drawing & Control Toolbar (Screenshot 9) ──────────────────────────
   Widget _buildTopToolbar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      color: Colors.white,
+      color: isDark ? const Color(0xFF1E293B) : Colors.white,
       child: Column(
         children: [
           Row(
@@ -408,7 +416,7 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
               children: [
                 Text(
                   '${_currentQuestionIndex + 1}/$_totalQuestions',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins'),
                 ),
                 const Row(
                   children: [
@@ -429,20 +437,23 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
   }
 
   void _showPaletteSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setPaletteState) => Container(
           padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: sheetBg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Select Pen Color & Stroke', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+              Text('Select Pen Color & Stroke', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
               const SizedBox(height: 14),
               // Colors
               Row(
@@ -608,38 +619,48 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 6,
+          Builder(
+            builder: (ctx) {
+              final d = Theme.of(ctx).brightness == Brightness.dark;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: d ? const Color(0xFF1E293B) : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
-            ),
+                child: Text(
+                  label,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: d ? Colors.white : const Color(0xFF1E293B), fontFamily: 'Poppins'),
+                ),
+              );
+            }
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.15),
-                  blurRadius: 6,
+          Builder(
+            builder: (ctx) {
+              final d = Theme.of(ctx).brightness == Brightness.dark;
+              return Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: d ? const Color(0xFF1E293B) : Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: Icon(icon, color: color, size: 22),
+                child: Icon(icon, color: color, size: 22),
+              );
+            }
           ),
         ],
       ),
@@ -647,19 +668,22 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
   }
 
   void _showQuestionListGrid() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        decoration: BoxDecoration(
+          color: sheetBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Question Navigator', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+            Text('Question Navigator', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
             const SizedBox(height: 16),
             Wrap(
               spacing: 12,
@@ -699,18 +723,21 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
   }
 
   void _showReportErrorDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     final issueCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.white,
+        backgroundColor: sheetBg,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Report an error', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+              Text('Report an error', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
               const SizedBox(height: 4),
               Text('Describe the error that you are facing. Please be as specific as possible', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey.shade600, fontFamily: 'Poppins')),
               const SizedBox(height: 14),
@@ -754,6 +781,9 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
   }
 
   void _showAddNoteModal() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     final noteCtrl = TextEditingController(
       text: '• Break the problem into smaller steps.\n• Check the keywords to understand what is being asked.\n• Check for negative signs in calculations.\n• Ask this to the teacher.',
     );
@@ -763,9 +793,9 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(ctx).padding.bottom + 20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: sheetBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -773,17 +803,18 @@ class _TestSolvingScreenState extends State<TestSolvingScreen> {
           children: [
             Center(child: Container(width: 36, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
             const SizedBox(height: 14),
-            const Text('Note', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+            Text('Note', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
             const SizedBox(height: 4),
             Text('Last Updated: 13 Jan 2024', style: TextStyle(fontSize: 10.5, color: Colors.grey.shade400, fontFamily: 'Poppins')),
             const SizedBox(height: 12),
             TextField(
               controller: noteCtrl,
               maxLines: 5,
+              style: TextStyle(color: textPrimary),
               decoration: InputDecoration(
-                fillColor: const Color(0xFFF8FAFC),
+                fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                 filled: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
               ),
             ),
             const SizedBox(height: 18),

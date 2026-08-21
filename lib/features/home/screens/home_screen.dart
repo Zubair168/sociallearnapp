@@ -106,10 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     final user = auth.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC),
       drawer: _buildDrawer(user, auth),
       body: Stack(
         children: [
@@ -284,12 +285,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? const Color(0xFF1E293B) : Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
+                        border: Border.all(
+                            color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                            width: 1.2),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.025),
+                            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.025),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -299,12 +302,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
+                          Text(
                             'Days Until Exam',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF64748B),
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                               fontFamily: 'Poppins',
                             ),
                           ),
@@ -312,19 +315,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Blue Calendar Icon without enclosing background box
+                              // Blue Calendar Icon
                               const Icon(
                                 Icons.calendar_today_rounded,
                                 color: Color(0xFF2A3BD4),
                                 size: 26,
                               ),
                               const SizedBox(width: 10),
-                              const Text(
+                              Text(
                                 '16',
                                 style: TextStyle(
                                   fontSize: 26,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF1E293B),
+                                  color: isDark ? Colors.white : const Color(0xFF1E293B),
                                   fontFamily: 'Poppins',
                                   height: 1.1,
                                 ),
@@ -351,13 +354,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                           padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDark ? const Color(0xFF1E293B) : Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                                color: const Color(0xFFF1F5F9), width: 1.2),
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                                width: 1.2),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.025),
+                                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.025),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -382,12 +386,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text(
+                                        Text(
                                           'Daily Goal',
                                           style: TextStyle(
                                             fontSize: 11.5,
                                             fontWeight: FontWeight.w500,
-                                            color: Color(0xFF64748B),
+                                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
@@ -402,19 +406,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                     RichText(
                                       text: TextSpan(
                                         text: '$goal ',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w800,
-                                          color: Color(0xFF1E293B),
+                                          color: isDark ? Colors.white : const Color(0xFF1E293B),
                                           fontFamily: 'Poppins',
                                         ),
-                                        children: const [
+                                        children: [
                                           TextSpan(
                                             text: 'Questions',
                                             style: TextStyle(
                                               fontSize: 12.5,
                                               fontWeight: FontWeight.w500,
-                                              color: Color(0xFF1E293B),
+                                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF1E293B),
                                               fontFamily: 'Poppins',
                                             ),
                                           ),
@@ -427,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: LinearProgressIndicator(
                                         value: pct,
                                         minHeight: 4.5,
-                                        backgroundColor: const Color(0xFFE2E8F0),
+                                        backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                                         valueColor:
                                             const AlwaysStoppedAnimation<Color>(
                                           Color(0xFF2A3BD4),
@@ -697,8 +701,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150',
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            const Row(
+                            SizedBox(height: 6),
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Flexible(
@@ -707,14 +711,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w700,
-                                      color: Color(0xFF1E293B),
+                                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                                       fontFamily: 'Poppins',
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                SizedBox(width: 4),
-                                Icon(Icons.verified_rounded,
+                                const SizedBox(width: 4),
+                                const Icon(Icons.verified_rounded,
                                     color: Color(0xFF2A3BD4), size: 14),
                               ],
                             ),
@@ -767,12 +771,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            const Text(
+                            Text(
                               '#15,121',
                               style: TextStyle(
                                 fontSize: 14.5,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF1E293B),
+                                color: isDark ? Colors.white : const Color(0xFF1E293B),
                                 fontFamily: 'Poppins',
                               ),
                             ),
@@ -925,12 +929,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 2),
-                            const Text(
+                            Text(
                               'Boğaziçi University',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF1E293B),
+                                color: isDark ? Colors.white : const Color(0xFF1E293B),
                                 fontFamily: 'Poppins',
                               ),
                               maxLines: 1,
@@ -952,20 +956,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Icon(Icons.people_outline_rounded,
                                     size: 11, color: Color(0xFF2A3BD4)),
                                 const SizedBox(width: 2),
-                                const Text('40',
+                                Text('40',
                                     style: TextStyle(
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFF1E293B))),
+                                        color: isDark ? Colors.white70 : const Color(0xFF1E293B))),
                                 const SizedBox(width: 4),
                                 const Icon(Icons.track_changes_rounded,
                                     size: 11, color: Color(0xFF0284C7)),
                                 const SizedBox(width: 2),
-                                const Text('461.2',
+                                Text('461.2',
                                     style: TextStyle(
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFF1E293B))),
+                                        color: isDark ? Colors.white70 : const Color(0xFF1E293B))),
                               ],
                             ),
                             const SizedBox(width: 4),
@@ -974,11 +978,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Icon(Icons.military_tech_outlined,
                                     size: 11, color: Color(0xFFEAB308)),
                                 const SizedBox(width: 2),
-                                const Text('#2,121',
+                                Text('#2,121',
                                     style: TextStyle(
                                         fontSize: 9.5,
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFF1E293B))),
+                                        color: isDark ? Colors.white70 : const Color(0xFF1E293B))),
                               ],
                             ),
                           ],
@@ -2307,16 +2311,23 @@ class _HomeScreenState extends State<HomeScreen> {
     required String btnText,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final cardBorder = isDark ? const Color(0xFF334155) : Colors.grey.shade100;
+    final titleColor = isDark ? Colors.white : AppColors.textPrimary;
+    final btnBg = isDark ? const Color(0xFF2A3BD4).withValues(alpha: 0.22) : const Color(0xFFEBF0FE);
+    final btnTextColor = isDark ? const Color(0xFF818CF8) : const Color(0xFF2A3BD4);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade100),
+        border: Border.all(color: cardBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -2332,10 +2343,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Flexible(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: titleColor,
                     fontFamily: 'Poppins',
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -2351,16 +2362,16 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFEBF0FE),
+                color: btnBg,
                 borderRadius: BorderRadius.circular(8),
               ),
               alignment: Alignment.center,
               child: Text(
                 btnText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF2A3BD4),
+                  color: btnTextColor,
                   fontFamily: 'Poppins',
                 ),
                 maxLines: 1,
@@ -2497,6 +2508,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Color iconColor,
     String title,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Row(
       children: [
         Container(
@@ -2512,10 +2524,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10.5,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1E293B),
+              color: isDark ? Colors.white70 : const Color(0xFF1E293B),
               fontFamily: 'Poppins',
             ),
             maxLines: 1,

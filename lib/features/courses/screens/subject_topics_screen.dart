@@ -315,25 +315,30 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final appBarBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBg,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(
+          child: Icon(
             Icons.chevron_left_rounded,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             size: 28,
           ),
         ),
         title: Text(
           widget.subjectName,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),
@@ -343,16 +348,16 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),
         children: [
-          // ── All Subjects Section Header ──────────────────────────────────
+          // ── All Subjects Section Header ────────────────────────────────────────
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'All Subjects',
                 style: TextStyle(
                   fontSize: 15.5,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -369,7 +374,7 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                     border: Border.all(
                       color: _currentSort != 'Default'
                           ? const Color(0xFF2A3BD4).withValues(alpha: 0.3)
-                          : const Color(0xFFE2E8F0),
+                          : isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                     ),
                   ),
                   child: Row(
@@ -379,7 +384,7 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                           size: 15,
                           color: _currentSort != 'Default'
                               ? const Color(0xFF2A3BD4)
-                              : Colors.indigo.shade800),
+                              : isDark ? Colors.white70 : Colors.indigo.shade800),
                       const SizedBox(width: 4),
                       Text(
                         _currentSort == 'Default' ? 'Sort By' : _currentSort,
@@ -388,7 +393,7 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                           fontWeight: FontWeight.w600,
                           color: _currentSort != 'Default'
                               ? const Color(0xFF2A3BD4)
-                              : Colors.indigo.shade800,
+                              : isDark ? Colors.white70 : Colors.indigo.shade800,
                           fontFamily: 'Poppins',
                         ),
                       ),
@@ -401,7 +406,7 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
 
           const SizedBox(height: 14),
 
-          // ── Topics List ───────────────────────────────────────────────────
+          // ── Topics List ─────────────────────────────────────────────────
           ..._topics.map((t) => _buildTopicCard(t)),
         ],
       ),
@@ -409,15 +414,21 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
   }
 
   Widget _buildTopicCard(TopicItem topic) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final textMuted = isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.025),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -440,10 +451,10 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                   children: [
                     Text(
                       topic.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
+                        color: textPrimary,
                         fontFamily: 'Poppins',
                       ),
                     ),
@@ -485,14 +496,14 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                     Icon(
                       Icons.assignment_outlined,
                       size: 13,
-                      color: Colors.grey.shade500,
+                      color: textMuted,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${topic.solved}/${topic.total} Solved',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade600,
+                        color: textMuted,
                         fontFamily: 'Poppins',
                       ),
                     ),
@@ -517,16 +528,16 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                       'Completed',
                       style: TextStyle(
                         fontSize: 10.5,
-                        color: Colors.grey.shade500,
+                        color: textMuted,
                         fontFamily: 'Poppins',
                       ),
                     ),
                     Text(
                       '${(topic.completedPct * 100).toInt()}%',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
+                        color: textPrimary,
                         fontFamily: 'Poppins',
                       ),
                     ),
@@ -538,7 +549,7 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                   child: LinearProgressIndicator(
                     value: topic.completedPct,
                     minHeight: 4,
-                    backgroundColor: const Color(0xFFF1F5F9),
+                    backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       Color(0xFF2A3BD4),
                     ),
@@ -723,6 +734,10 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Container(
       decoration: const BoxDecoration(color: Colors.transparent),
       child: Column(
@@ -745,16 +760,16 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
 
           const SizedBox(height: 10),
 
-          // ── White Modal Container ─────────────────────────────────────────
+          // ── Modal Container ───────────────────────────────────────────────
           Container(
             width: double.infinity,
             constraints: BoxConstraints(
               maxHeight: MediaQuery.of(context).size.height * 0.85,
             ),
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            decoration: BoxDecoration(
+              color: sheetBg,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -764,10 +779,10 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
                   // Title: Linear Equations
                   Text(
                     widget.topic.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF2A3BD4),
+                      color: const Color(0xFF2A3BD4),
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -856,13 +871,13 @@ class _TopicActionModalContentState extends State<_TopicActionModalContent> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Expanded(
+                          Expanded(
                             child: Text(
                               '12 Question in past YKS.',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF1E293B),
+                                color: textPrimary,
                                 fontFamily: 'Poppins',
                               ),
                             ),

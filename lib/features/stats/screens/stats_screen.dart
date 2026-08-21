@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:sociallearnapp/features/auth/services/auth_service.dart';
-import 'package:sociallearnapp/features/courses/screens/favorited_questions_screen.dart';
 import 'package:sociallearnapp/features/notifications/screens/notifications_screen.dart';
 import 'package:sociallearnapp/features/profile/screens/profile_screen.dart';
 
@@ -341,6 +340,11 @@ class _StatsScreenState extends State<StatsScreen>
   Widget _buildActiveState() {
     final currentStats =
         _courseStats[_selectedCourse] ?? _courseStats['All Courses']!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+    final dividerColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -356,18 +360,18 @@ class _StatsScreenState extends State<StatsScreen>
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: borderColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(_selectedCourse,
-                      style: const TextStyle(
+                      style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF1E293B),
+                          color: textPrimary,
                           fontFamily: 'Poppins')),
                   const Icon(Icons.keyboard_arrow_down_rounded,
                       color: Color(0xFF64748B), size: 22),
@@ -402,12 +406,12 @@ class _StatsScreenState extends State<StatsScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFF1F5F9)),
+              border: Border.all(color: borderColor),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 2))
               ],
@@ -415,11 +419,11 @@ class _StatsScreenState extends State<StatsScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Question Analysis',
+                Text('Question Analysis',
                     style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1E293B),
+                        color: textPrimary,
                         fontFamily: 'Poppins')),
                 const SizedBox(height: 16),
                 Row(
@@ -444,14 +448,14 @@ class _StatsScreenState extends State<StatsScreen>
                               color: const Color(0xFF22C55E),
                               label: 'Correct',
                               value: '${currentStats['correct']}'),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, color: dividerColor),
                           _buildAnalysisRow(
                               color: const Color(0xFFEF4444),
                               label: 'Incorrect',
                               value: '${currentStats['incorrect']}'),
-                          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, color: dividerColor),
                           _buildAnalysisRow(
-                              color: const Color(0xFFF59E0B),
+                              color: const Color(0xFF94A3B8),
                               label: 'Unanswered',
                               value: '${currentStats['unanswered']}'),
                         ],
@@ -465,15 +469,15 @@ class _StatsScreenState extends State<StatsScreen>
 
           const SizedBox(height: 12),
 
-          // Favorites & Notes
+          // Detailed statistics list
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardBg,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFFF1F5F9)),
+              border: Border.all(color: borderColor),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                     blurRadius: 8,
                     offset: const Offset(0, 2))
               ],
@@ -481,37 +485,27 @@ class _StatsScreenState extends State<StatsScreen>
             child: Column(
               children: [
                 _buildListStatRow(
-                  icon: Icons.star_rounded,
+                  icon: Icons.assignment_outlined,
+                  iconColor: const Color(0xFF2A3BD4),
+                  label: 'Solved Questions',
+                  value: currentStats['solved'] as String,
+                  onTap: () {},
+                ),
+                Divider(height: 1, indent: 48, color: dividerColor),
+                _buildListStatRow(
+                  icon: Icons.star_border_rounded,
                   iconColor: const Color(0xFFF59E0B),
                   label: 'Favorite Questions',
-                  value: '112',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FavoritedQuestionsScreen(),
-                      ),
-                    );
-                  },
+                  value: '18',
+                  onTap: () {},
                 ),
-                const Divider(
-                    height: 1,
-                    indent: 16,
-                    endIndent: 16,
-                    color: Color(0xFFF1F5F9)),
+                Divider(height: 1, indent: 48, color: dividerColor),
                 _buildListStatRow(
-                  icon: Icons.description_outlined,
-                  iconColor: const Color(0xFF2A3BD4),
-                  label: 'Questions with Notes',
-                  value: '36',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FavoritedQuestionsScreen(),
-                      ),
-                    );
-                  },
+                  icon: Icons.close_rounded,
+                  iconColor: const Color(0xFFEF4444),
+                  label: 'Incorrect Questions',
+                  value: '${currentStats['incorrect']}',
+                  onTap: () {},
                 ),
               ],
             ),
@@ -519,11 +513,11 @@ class _StatsScreenState extends State<StatsScreen>
 
           const SizedBox(height: 16),
 
-          const Text('Success rate in every difficulty level',
+          Text('Success rate in every difficulty level',
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E293B),
+                      color: textPrimary,
                       fontFamily: 'Poppins'))
               .animate(delay: 200.ms)
               .fadeIn(),
@@ -542,12 +536,17 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildStatTile(String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,15 +554,15 @@ class _StatsScreenState extends State<StatsScreen>
           Text(label,
               style: TextStyle(
                   fontSize: 10.5,
-                  color: Colors.grey.shade500,
+                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
                   fontFamily: 'Poppins',
                   height: 1.3)),
           const SizedBox(height: 6),
           Text(value,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins')),
         ],
       ),
@@ -572,6 +571,9 @@ class _StatsScreenState extends State<StatsScreen>
 
   Widget _buildAnalysisRow(
       {required Color color, required String label, required String value}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -584,16 +586,16 @@ class _StatsScreenState extends State<StatsScreen>
           const SizedBox(width: 10),
           Expanded(
               child: Text(label,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF1E293B),
+                      color: textPrimary,
                       fontFamily: 'Poppins'))),
           Text(value,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins')),
           const SizedBox(width: 6),
           const Icon(Icons.chevron_right_rounded,
@@ -610,6 +612,9 @@ class _StatsScreenState extends State<StatsScreen>
     required String value,
     VoidCallback? onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -622,20 +627,20 @@ class _StatsScreenState extends State<StatsScreen>
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins',
                 ),
               ),
             ),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1E293B),
+                color: textPrimary,
                 fontFamily: 'Poppins',
               ),
             ),
@@ -649,13 +654,18 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   Widget _buildDifficultyBar(String label, Color color, double value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -664,10 +674,10 @@ class _StatsScreenState extends State<StatsScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(label,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF1E293B),
+                      color: textPrimary,
                       fontFamily: 'Poppins')),
               Text('${(value * 100).toInt()}%',
                   style: TextStyle(
@@ -683,7 +693,7 @@ class _StatsScreenState extends State<StatsScreen>
             child: LinearProgressIndicator(
               value: value,
               minHeight: 6,
-              backgroundColor: const Color(0xFFF1F5F9),
+              backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
               valueColor: AlwaysStoppedAnimation<Color>(color),
             ),
           ),
@@ -693,57 +703,90 @@ class _StatsScreenState extends State<StatsScreen>
   }
 
   void _showCourseDropdown() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-          Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2))),
-          const SizedBox(height: 12),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('Select Course',
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.65,
+        ),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF475569) : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'Select Course',
                 style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1E293B),
-                    fontFamily: 'Poppins')),
-          ),
-          const SizedBox(height: 8),
-          ..._courseOptions.map((c) => ListTile(
-                onTap: () {
-                  setState(() {
-                    _selectedCourse = c;
-                    _donutController.reset();
-                    _donutController.forward();
-                  });
-                  Navigator.pop(ctx);
-                },
-                title: Text(c,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Poppins',
-                        fontWeight: _selectedCourse == c
-                            ? FontWeight.w700
-                            : FontWeight.w400,
-                        color: _selectedCourse == c
-                            ? const Color(0xFF2A3BD4)
-                            : const Color(0xFF1E293B))),
-                trailing: _selectedCourse == c
-                    ? const Icon(Icons.check_rounded,
-                        color: Color(0xFF2A3BD4), size: 20)
-                    : null,
-              )),
-          const SizedBox(height: 16),
-        ],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: textPrimary,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                children: _courseOptions
+                    .map(
+                      (c) => ListTile(
+                        onTap: () {
+                          setState(() {
+                            _selectedCourse = c;
+                            _donutController.reset();
+                            _donutController.forward();
+                          });
+                          Navigator.pop(ctx);
+                        },
+                        title: Text(
+                          c,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            fontWeight: _selectedCourse == c
+                                ? FontWeight.w700
+                                : FontWeight.w400,
+                            color: _selectedCourse == c
+                                ? const Color(0xFF2A3BD4)
+                                : textPrimary,
+                          ),
+                        ),
+                        trailing: _selectedCourse == c
+                            ? const Icon(Icons.check_rounded,
+                                color: Color(0xFF2A3BD4), size: 20)
+                            : null,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
     );
   }

@@ -94,25 +94,30 @@ class _TopicAnalysisScreenState extends State<TopicAnalysisScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final appBarBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBg,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(
+          child: Icon(
             Icons.chevron_left_rounded,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             size: 28,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Topic Analysis',
           style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),
@@ -179,7 +184,7 @@ class _TopicAnalysisScreenState extends State<TopicAnalysisScreen> {
                 bottom: MediaQuery.of(context).padding.bottom + 12,
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? const Color(0xFF1E293B) : Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.06),
@@ -228,18 +233,23 @@ class _TopicAnalysisScreenState extends State<TopicAnalysisScreen> {
   }
 
   Widget _buildTopicAnalysisCard(TopicAnalysisItem item) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final textMuted = isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600;
     final total = item.correct + item.incorrect + item.unanswered;
     final successPct = total == 0 ? 0 : ((item.correct / total) * 100).toInt();
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
+            color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.025),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -253,10 +263,10 @@ class _TopicAnalysisScreenState extends State<TopicAnalysisScreen> {
             // Title
             Text(
               item.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1E293B),
+                color: textPrimary,
                 fontFamily: 'Poppins',
               ),
             ),
@@ -266,23 +276,23 @@ class _TopicAnalysisScreenState extends State<TopicAnalysisScreen> {
             Row(
               children: [
                 Icon(Icons.assignment_outlined,
-                    size: 13, color: Colors.grey.shade500),
+                    size: 13, color: textMuted),
                 const SizedBox(width: 4),
                 Expanded(
                   child: RichText(
                     text: TextSpan(
                       style: TextStyle(
                         fontSize: 11.5,
-                        color: Colors.grey.shade600,
+                        color: textMuted,
                         fontFamily: 'Poppins',
                       ),
                       children: [
                         const TextSpan(text: 'You solved '),
                         TextSpan(
                           text: '${item.solvedQuestions} questions',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1E293B),
+                            color: textPrimary,
                           ),
                         ),
                         const TextSpan(text: ' from this topic in trial exams.'),

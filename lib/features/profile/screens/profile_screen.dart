@@ -17,26 +17,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     final user = auth.currentUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final appBarBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: appBarBg,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(
+          child: Icon(
             Icons.chevron_left_rounded,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             size: 28,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Profile',
           style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),
@@ -230,12 +234,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required VoidCallback onTap,
     bool isDestructive = false,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final textColor = isDestructive
+        ? const Color(0xFFEF4444)
+        : isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: borderColor),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
@@ -253,7 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w600,
-            color: isDestructive ? const Color(0xFFEF4444) : const Color(0xFF1E293B),
+            color: textColor,
             fontFamily: 'Poppins',
           ),
         ),
@@ -269,6 +280,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ─── Modal: Request a Feature ───────────────────────────────────────────────
   void _showRequestFeatureModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     String selectedType = 'Others';
     final descCtrl = TextEditingController();
 
@@ -277,24 +291,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) => Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          backgroundColor: Colors.white,
+          backgroundColor: sheetBg,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
-                  child: Text(
-                    'Request a feature',
-                    style: TextStyle(
-                      fontSize: 16.5,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E293B),
-                      fontFamily: 'Poppins',
-                    ),
+              Center(
+                child: Text(
+                  'Request a feature',
+                  style: TextStyle(
+                    fontSize: 16.5,
+                    fontWeight: FontWeight.w700,
+                    color: textPrimary,
+                    fontFamily: 'Poppins',
                   ),
                 ),
+              ),
                 const SizedBox(height: 6),
                 Text(
                   'Have an idea in mind that could make Tudu more awesome for you? Share with us your idea and we may implement it for you.',
@@ -307,12 +321,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Feature type',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E293B),
+                    color: textPrimary,
                     fontFamily: 'Poppins',
                   ),
                 ),
@@ -415,22 +429,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // ─── Modal: Write to Tudu ──────────────────────────────────────────────────
+  // ─── Modal: Write to Tudu ───────────────────────────────────────────────
   void _showWriteToTuduModal(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     final msgCtrl = TextEditingController();
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.white,
+        backgroundColor: sheetBg,
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Center(
-                child: Text('Write to Tudu Support', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+              Center(
+                child: Text('Write to Tudu Support', style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
               ),
               const SizedBox(height: 6),
               Text('How can our academic team help you with your exam prep?', textAlign: TextAlign.center, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600, fontFamily: 'Poppins')),
@@ -438,10 +455,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextField(
                 controller: msgCtrl,
                 maxLines: 4,
+                style: TextStyle(color: textPrimary),
                 decoration: InputDecoration(
                   hintText: 'Type your message or question here...',
                   hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade400, fontFamily: 'Poppins'),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                  fillColor: isDark ? const Color(0xFF0F172A) : null,
+                  filled: isDark,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
                 ),
               ),
               const SizedBox(height: 16),

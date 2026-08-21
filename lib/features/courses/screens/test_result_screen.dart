@@ -77,8 +77,9 @@ class _TestResultScreenState extends State<TestResultScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: Stack(
         children: [
           // Main scrollable content
@@ -151,14 +152,17 @@ class _TestResultScreenState extends State<TestResultScreen>
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Stack(
       children: [
-        // Confetti background spanning full width
+        // Gradient header background
         Positioned.fill(
           child: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFFFF8F0), Colors.white],
+                colors: isDark
+                    ? [const Color(0xFF1E293B), const Color(0xFF0F172A)]
+                    : [const Color(0xFFFFF8F0), Colors.white],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -180,15 +184,15 @@ class _TestResultScreenState extends State<TestResultScreen>
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.maybePop(context),
-                      child: const Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 20, color: Color(0xFF1E293B)),
+                      child: Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 20, color: isDark ? Colors.white : const Color(0xFF1E293B)),
                     ),
                     const SizedBox(width: 12),
-                    const Text('Test Result',
+                    Text('Test Result',
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF1E293B),
+                            color: isDark ? Colors.white : const Color(0xFF1E293B),
                             fontFamily: 'Poppins')),
                   ],
                 ),
@@ -228,10 +232,10 @@ class _TestResultScreenState extends State<TestResultScreen>
                 child: Text(
                   widget.testTitle,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1E293B),
+                    color: isDark ? Colors.white : const Color(0xFF1E293B),
                     fontFamily: 'Poppins',
                     height: 1.3,
                   ),
@@ -252,17 +256,20 @@ class _TestResultScreenState extends State<TestResultScreen>
   }
 
   Widget _buildNetScoreCard() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
     final positive = widget.rankChange > 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
               blurRadius: 10,
               offset: const Offset(0, 2))
         ],

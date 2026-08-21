@@ -29,25 +29,30 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardBg,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(
+          child: Icon(
             Icons.chevron_left_rounded,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             size: 28,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Smart Study Plan',
           style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),
@@ -56,13 +61,13 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
       body: _selectedTabIndex == 0 ? _buildMyPlanView() : _buildTemplateLibraryView(),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          color: cardBg,
+          border: Border(top: BorderSide(color: isDark ? const Color(0xFF334155) : Colors.grey.shade200)),
         ),
         child: BottomNavigationBar(
           currentIndex: _selectedTabIndex,
           onTap: (i) => setState(() => _selectedTabIndex = i),
-          backgroundColor: Colors.white,
+          backgroundColor: cardBg,
           selectedItemColor: const Color(0xFF2A3BD4),
           unselectedItemColor: const Color(0xFF94A3B8),
           selectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, fontFamily: 'Poppins'),
@@ -87,6 +92,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
 
   // ─── Tab 1: My Plan View (Screenshots 6 & 7) ──────────────────────────────
   Widget _buildMyPlanView() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     final progress = context.watch<ProgressProvider>();
     final tasks = progress.studyTasks;
     final completedCount = progress.completedTasksCount;
@@ -104,7 +113,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade600,
+              color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
               fontFamily: 'Poppins',
             ),
           ),
@@ -124,10 +133,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                 width: 44,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSel ? const Color(0xFF2A3BD4) : Colors.white,
+                  color: isSel ? const Color(0xFF2A3BD4) : cardBg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSel ? const Color(0xFF2A3BD4) : const Color(0xFFE2E8F0),
+                    color: isSel ? const Color(0xFF2A3BD4) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   ),
                 ),
                 child: Column(
@@ -147,7 +156,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: isSel ? Colors.white : const Color(0xFF1E293B),
+                        color: isSel ? Colors.white : textPrimary,
                         fontFamily: 'Poppins',
                       ),
                     ),
@@ -178,12 +187,12 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Today\'s Tasks',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF1E293B),
+                color: textPrimary,
                 fontFamily: 'Poppins',
               ),
             ),
@@ -227,17 +236,17 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                 'Tasks Completed  ($completedCount/$totalCount)',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade600,
+                  color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
                   fontFamily: 'Poppins',
                   fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
                 '$progressPct%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -256,6 +265,9 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
   }
 
   Widget _buildEmptyTasksState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Container(
       padding: const EdgeInsets.all(32),
       alignment: Alignment.center,
@@ -265,8 +277,8 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
           Container(
             width: 84,
             height: 84,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF1F5F9),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -276,12 +288,12 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No Tasks Added',
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1E293B),
+              color: textPrimary,
               fontFamily: 'Poppins',
             ),
           ),
@@ -291,7 +303,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey.shade500,
+              color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
               fontFamily: 'Poppins',
               height: 1.4,
             ),
@@ -317,16 +329,23 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
   }
 
   Widget _buildTaskCard(StudyTaskRecord task) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = task.isCompleted
+        ? const Color(0xFF86EFAC)
+        : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0));
+
     final iconData = IconData(task.iconCodePoint, fontFamily: 'MaterialIcons');
     final iconBg = Color(task.iconBgColor);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: task.isCompleted ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
+          color: borderColor,
           width: task.isCompleted ? 1.5 : 1,
         ),
       ),
@@ -363,10 +382,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                                 task.title,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF1E293B),
+                                  color: textPrimary,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
@@ -435,9 +454,9 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
               margin: const EdgeInsets.fromLTRB(40, 0, 12, 10),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,7 +468,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                       task.note,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade700,
+                        color: isDark ? const Color(0xFFCBD5E1) : Colors.grey.shade700,
                         fontFamily: 'Poppins',
                         height: 1.35,
                       ),
@@ -498,15 +517,19 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
 
   // ─── Modal: Topic Action Sheet (Screenshot 7) ──────────────────────────────
   void _showTopicActionModal(StudyTaskRecord task) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
         padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(ctx).padding.bottom + 20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -517,7 +540,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: isDark ? const Color(0xFF475569) : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -543,14 +566,14 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                       '${task.course} • ${task.durationMinutes} mins',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey.shade500,
+                        color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
                         fontFamily: 'Poppins',
                       ),
                     ),
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF1E293B)),
+                  icon: Icon(Icons.more_vert_rounded, color: textPrimary),
                   onPressed: () {},
                 ),
               ],
@@ -618,17 +641,21 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF0F172A) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardBg,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),
@@ -648,10 +675,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
+                  color: textPrimary,
                   fontFamily: 'Poppins',
                 ),
               ),
@@ -665,18 +692,21 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
 
   // ─── Tab 2: Template Library View (Screenshot 6 middle) ───────────────────
   Widget _buildTemplateLibraryView() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
     final categories = ['All', 'Mathematics', 'Turkish', 'Geometry'];
 
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),
       children: [
-        const Text(
+        Text(
           'Template Library',
           style: TextStyle(
             fontSize: 16.5,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
+            color: textPrimary,
             fontFamily: 'Poppins',
           ),
         ),
@@ -694,10 +724,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isSel ? const Color(0xFF2A3BD4) : Colors.white,
+                    color: isSel ? const Color(0xFF2A3BD4) : cardBg,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: isSel ? const Color(0xFF2A3BD4) : const Color(0xFFE2E8F0),
+                      color: isSel ? const Color(0xFF2A3BD4) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                     ),
                   ),
                   child: Text(
@@ -705,7 +735,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
-                      color: isSel ? Colors.white : const Color(0xFF1E293B),
+                      color: isSel ? Colors.white : (isDark ? const Color(0xFFCBD5E1) : const Color(0xFF1E293B)),
                       fontFamily: 'Poppins',
                     ),
                   ),
@@ -723,7 +753,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
           course: 'Mathematics',
           duration: '60 mins Daily',
           studentsCount: '210 Students Completed this',
-          desc: '8 haftalık matematik odaklı bu çalışma kampı ile temellerini sağlamlaştır.\nToplam Konu: 25\nToplam Süre: 25 saat\nSeviye: Temel',
+          desc: 'Solidify your foundations with this 8-week intensive math study camp.\nTotal Topics: 25\nTotal Duration: 25 hours\nLevel: Fundamental',
           topics: [
             {'name': 'Linear Equations', 'type': 'TYT', 'time': '30 mins'},
             {'name': 'Quadratic Equations', 'type': 'AYT', 'time': '30 mins'},
@@ -742,12 +772,16 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
     required String desc,
     required List<Map<String, String>> topics,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -773,26 +807,26 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
             '$course • $duration\n$studentsCount',
             style: TextStyle(
               fontSize: 11.5,
-              color: Colors.grey.shade600,
+              color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600,
               fontFamily: 'Poppins',
               height: 1.35,
             ),
           ),
           const SizedBox(height: 14),
-          const Text('Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+          Text('Details', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 4),
-          Text(desc, style: TextStyle(fontSize: 11.5, color: Colors.grey.shade600, fontFamily: 'Poppins', height: 1.35)),
+          Text(desc, style: TextStyle(fontSize: 11.5, color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade600, fontFamily: 'Poppins', height: 1.35)),
           const SizedBox(height: 14),
-          const Text('Topics', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, fontFamily: 'Poppins')),
+          Text('Topics', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           ...topics.map((tp) {
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
               ),
               child: Row(
                 children: [
@@ -806,7 +840,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(tp['name']!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+                        Text(tp['name']!, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
                         Text('${tp['type']!} • ${tp['time']!}', style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500, fontFamily: 'Poppins')),
                       ],
                     ),
@@ -876,26 +910,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final scaffoldBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF7F8FC);
+    final cardBg = isDark ? const Color(0xFF1E293B) : Colors.white;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1E293B);
+    final borderColor = isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardBg,
         elevation: 0,
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: const Icon(Icons.chevron_left_rounded, color: Color(0xFF1E293B), size: 28),
+          child: Icon(Icons.chevron_left_rounded, color: textPrimary, size: 28),
         ),
-        title: const Text('Add New Task', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+        title: Text('Add New Task', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins')),
         centerTitle: false,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text('Task Type', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Task Type', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(color: const Color(0xFFE2E8F0), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0), borderRadius: BorderRadius.circular(10)),
             child: Row(
               children: [
                 Expanded(child: _buildTypePill('TYT')),
@@ -905,7 +945,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           const SizedBox(height: 18),
 
-          const Text('Task Date', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Task Date', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           GestureDetector(
             onTap: () async {
@@ -920,16 +960,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardBg,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: borderColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     '${_taskDate.day.toString().padLeft(2, '0')}-${_taskDate.month.toString().padLeft(2, '0')}-${_taskDate.year}',
-                    style: const TextStyle(fontSize: 13.5, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+                    style: TextStyle(fontSize: 13.5, color: textPrimary, fontFamily: 'Poppins'),
                   ),
                   const Icon(Icons.calendar_today_outlined, size: 18, color: Color(0xFF64748B)),
                 ],
@@ -938,16 +978,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           const SizedBox(height: 18),
 
-          const Text('Course', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Course', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+            decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: borderColor)),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedCourse,
+                dropdownColor: cardBg,
                 isExpanded: true,
-                items: _courses.map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(fontSize: 13.5, fontFamily: 'Poppins')))).toList(),
+                items: _courses.map((c) => DropdownMenuItem(value: c, child: Text(c, style: TextStyle(fontSize: 13.5, color: textPrimary, fontFamily: 'Poppins')))).toList(),
                 onChanged: (v) {
                   if (v != null) setState(() => _selectedCourse = v);
                 },
@@ -956,16 +997,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           const SizedBox(height: 18),
 
-          const Text('Topic', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Topic', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+            decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: borderColor)),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedTopic,
+                dropdownColor: cardBg,
                 isExpanded: true,
-                items: _topics.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 13.5, fontFamily: 'Poppins')))).toList(),
+                items: _topics.map((t) => DropdownMenuItem(value: t, child: Text(t, style: TextStyle(fontSize: 13.5, color: textPrimary, fontFamily: 'Poppins')))).toList(),
                 onChanged: (v) {
                   if (v != null) setState(() => _selectedTopic = v);
                 },
@@ -974,11 +1016,11 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           const SizedBox(height: 18),
 
-          const Text('Time to Study', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Time to Study', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE2E8F0))),
+            decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(10), border: Border.all(color: borderColor)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -999,7 +1041,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ),
                 Text(
                   '${_studyHours.toString().padLeft(2, '0')}:${_studyMinutes.toString().padLeft(2, '0')}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins'),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: textPrimary, fontFamily: 'Poppins'),
                 ),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF2A3BD4)),
@@ -1019,17 +1061,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           ),
           const SizedBox(height: 18),
 
-          const Text('Note', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+          Text('Note', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: textPrimary, fontFamily: 'Poppins')),
           const SizedBox(height: 8),
           TextField(
             controller: _noteCtrl,
             maxLines: 3,
+            style: TextStyle(color: textPrimary, fontFamily: 'Poppins'),
             decoration: InputDecoration(
               hintText: 'Add your note...',
-              fillColor: Colors.white,
+              hintStyle: TextStyle(color: isDark ? const Color(0xFF64748B) : Colors.grey.shade400),
+              fillColor: cardBg,
               filled: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: borderColor)),
             ),
           ),
           const SizedBox(height: 28),
