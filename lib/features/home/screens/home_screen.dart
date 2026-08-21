@@ -635,7 +635,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   // View All (4) Button
                   GestureDetector(
-                    onTap: _showOnboardingTasksSheet,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SmartStudyPlanScreen(),
+                        ),
+                      );
+                    },
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -2651,6 +2658,16 @@ class _HomeScreenState extends State<HomeScreen> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
+                  // Getting Started Checklist
+                  _buildDrawerItem(
+                    icon: Icons.checklist_rtl_rounded,
+                    title: 'Getting Started Checklist',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showOnboardingTasksSheet();
+                    },
+                  ),
+
                   // Duels
                   _buildDrawerItem(
                     icon: Icons.sports_martial_arts_rounded,
