@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'title': 'Set your study goal', 'icon': Icons.track_changes_rounded, 'done': true},
     {'title': 'Solve one test', 'icon': Icons.description_outlined, 'done': true},
     {'title': 'Solve one "0 mistake" test', 'icon': Icons.fact_check_outlined, 'done': true},
-    {'title': 'Solve one mock exam (deneme)', 'icon': Icons.assignment_outlined, 'done': false},
+    {'title': 'Solve one mock exam (Practice Exam)', 'icon': Icons.assignment_outlined, 'done': false},
     {'title': 'Add a favorite or mistaken question', 'icon': Icons.star_border_rounded, 'done': false},
   ];
 
@@ -449,38 +449,198 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 14),
 
-            // ── 4. My Plan Card (Active State from Screenshot) ───────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFF1F5F9)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+            // ── 4. My Plan Container (Dynamic Live Tasks with Interactive Checkmarks) ──
+            Consumer<ProgressProvider>(
+              builder: (context, progress, _) {
+                final tasks = progress.studyTasks;
+                final completedCount = progress.completedTasksCount;
+                final totalCount = progress.totalTasksCount;
+                final remainingCount = progress.remainingTasksCount;
+                final progressFraction = progress.tasksProgress;
+
+                return Container(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.025),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Top Title and Plan Details link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'My Plan',
+                      // Header Row: My Plan + Plan Details >
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'My Plan',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: isDark ? Colors.white : const Color(0xFF1E293B),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const SmartStudyPlanScreen(),
+                                ),
+                              );
+                            },
+                            child: const Row(
+                              children: [
+                                Text(
+                                  'Plan Details',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF2A3BD4),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                SizedBox(width: 2),
+                                Icon(Icons.chevron_right_rounded,
+                                    size: 16, color: Color(0xFF2A3BD4)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Progress description
+                      RichText(
+                        text: TextSpan(
+                          text: remainingCount > 0 ? 'You need to solve ' : 'Great job! You completed all ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569),
+                            fontFamily: 'Poppins',
+                          ),
+                          children: [
+                            TextSpan(
+                              text: remainingCount > 0 ? '$remainingCount more ' : '$completedCount ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : const Color(0xFF1E293B),
+                              ),
+                            ),
+                            TextSpan(
+                              text: remainingCount > 0 ? 'tasks to complete daily plan' : 'tasks today!',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Progress Bar with completed and total labels
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: progressFraction,
+                          minHeight: 6,
+                          backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Color(0xFF2A3BD4),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '$completedCount completed',
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              color: Color(0xFF94A3B8),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          Text(
+                            '$totalCount tasks',
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              color: Color(0xFF94A3B8),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 14),
+
+                      // Today's Pending Tasks Header
+                      Text(
+                        "Today's Pending Tasks",
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.w700,
-                          color: Color(0xFF1E293B),
+                          color: isDark ? Colors.white : const Color(0xFF1E293B),
                           fontFamily: 'Poppins',
                         ),
                       ),
+                      const SizedBox(height: 10),
+
+                      // Live Dynamic Tasks
+                      if (tasks.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Center(
+                            child: Text(
+                              'No study tasks scheduled for today.',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        ...List.generate(tasks.take(3).length, (index) {
+                          final task = tasks[index];
+                          return Column(
+                            children: [
+                              if (index > 0)
+                                Divider(
+                                  color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
+                                  height: 16,
+                                ),
+                              _buildPendingTaskItem(
+                                task: task,
+                                onToggle: () => progress.toggleStudyTask(task.id),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => SubjectTopicsScreen(
+                                        subjectName: task.course.isNotEmpty ? task.course : 'Mathematics',
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          );
+                        }),
+
+                      const SizedBox(height: 14),
+
+                      // View All Button
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -490,180 +650,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: const Row(
-                          children: [
-                            Text(
-                              'Plan Details',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2A3BD4),
-                                fontFamily: 'Poppins',
-                              ),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF2A3BD4).withValues(alpha: 0.2) : const Color(0xFFEBF0FE),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'View All ($totalCount)',
+                            style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2A3BD4),
+                              fontFamily: 'Poppins',
                             ),
-                            SizedBox(width: 2),
-                            Icon(Icons.chevron_right_rounded,
-                                size: 16, color: Color(0xFF2A3BD4)),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
-
-                  // Progress description
-                  RichText(
-                    text: const TextSpan(
-                      text: 'You need to solve ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF475569),
-                        fontFamily: 'Poppins',
-                      ),
-                      children: [
-                        TextSpan(
-                          text: '4 more ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF1E293B),
-                          ),
-                        ),
-                        TextSpan(
-                          text: 'tests to complete daily plan',
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Progress Bar with 0 and 10 labels
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: const LinearProgressIndicator(
-                      value: 0.6,
-                      minHeight: 6,
-                      backgroundColor: Color(0xFFE2E8F0),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFF2A3BD4),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '0',
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          color: Color(0xFF94A3B8),
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                      Text(
-                        '10',
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          color: Color(0xFF94A3B8),
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // Today's Pending Tasks Header
-                  const Text(
-                    "Today's Pending Tasks",
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1E293B),
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Task 1: Linear Equations
-                  _buildPendingTaskItem(
-                    title: 'Linear Equations',
-                    tier: 'TYT',
-                    tierBg: const Color(0xFFEEF2FF),
-                    tierFg: const Color(0xFF2A3BD4),
-                    duration: '60 mins',
-                    iconBg: const Color(0xFFE0F2FE),
-                    iconColor: const Color(0xFF0284C7),
-                    icon: Icons.calculate_outlined,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SubjectTopicsScreen(
-                            subjectName: 'Mathematics',
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const Divider(color: Color(0xFFF1F5F9), height: 16),
-
-                  // Task 2: Tanzimat Literature
-                  _buildPendingTaskItem(
-                    title: 'Tanzimat Literature',
-                    tier: 'AYT',
-                    tierBg: const Color(0xFFFFF7ED),
-                    tierFg: const Color(0xFFEA580C),
-                    duration: '30 mins',
-                    iconBg: const Color(0xFFFFE4E6),
-                    iconColor: const Color(0xFFE11D48),
-                    icon: Icons.flag_outlined,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SubjectTopicsScreen(
-                            subjectName: 'Turkish Literature',
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  // View All (4) Button
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SmartStudyPlanScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFEBF0FE),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'View All (4)',
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2A3BD4),
-                          fontFamily: 'Poppins',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ).animate().fadeIn(delay: 150.ms),
 
             const SizedBox(height: 14),
@@ -2367,95 +2376,115 @@ class _HomeScreenState extends State<HomeScreen> {
   // ─── Pending Task Item (My Plan section) ────────────────────────────────────
 
   Widget _buildPendingTaskItem({
-    required String title,
-    required String tier,
-    required Color tierBg,
-    required Color tierFg,
-    required String duration,
-    required Color iconBg,
-    required Color iconColor,
-    required IconData icon,
+    required StudyTaskRecord task,
+    required VoidCallback onToggle,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    final isDone = task.isCompleted;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : const Color(0xFF1E293B);
+
+    final iconData = IconData(task.iconCodePoint, fontFamily: 'MaterialIcons');
+    final iconBg = Color(task.iconBgColor);
+    final iconColor = task.type == 'TYT' ? const Color(0xFF0284C7) : const Color(0xFFEA580C);
+    final tierBg = task.type == 'TYT' ? const Color(0xFFEEF2FF) : const Color(0xFFFFF7ED);
+    final tierFg = task.type == 'TYT' ? const Color(0xFF2A3BD4) : const Color(0xFFEA580C);
+
+    return InkWell(
       onTap: onTap,
-      child: Row(
-        children: [
-          // Checkbox circle
-          Container(
-            width: 22,
-            height: 22,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
-            ),
-          ),
-          const SizedBox(width: 10),
-          // Subject icon
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: iconBg,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: iconColor, size: 18),
-          ),
-          const SizedBox(width: 10),
-          // Title
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1E293B),
-                fontFamily: 'Poppins',
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 6),
-          // Tier pill
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-            decoration: BoxDecoration(
-              color: tierBg,
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Text(
-              tier,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                color: tierFg,
-                fontFamily: 'Poppins',
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            // Interactive Checkbox circle
+            GestureDetector(
+              onTap: onToggle,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 22,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: isDone ? const Color(0xFF22C55E) : Colors.transparent,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isDone ? const Color(0xFF22C55E) : const Color(0xFFCBD5E1),
+                    width: 1.5,
+                  ),
+                ),
+                child: isDone
+                    ? const Icon(Icons.check_rounded, color: Colors.white, size: 15)
+                    : null,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          // Duration
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.access_time_rounded,
-                  size: 11, color: Colors.grey.shade400),
-              const SizedBox(width: 2),
-              Text(
-                duration,
+            const SizedBox(width: 10),
+            // Subject icon
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: iconBg,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(iconData, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 10),
+            // Title
+            Expanded(
+              child: Text(
+                task.title,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isDone ? const Color(0xFF94A3B8) : titleColor,
+                  decoration: isDone ? TextDecoration.lineThrough : null,
+                  fontFamily: 'Poppins',
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 6),
+            // Tier pill
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+              decoration: BoxDecoration(
+                color: tierBg,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                task.type,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Colors.grey.shade500,
+                  fontWeight: FontWeight.w700,
+                  color: tierFg,
                   fontFamily: 'Poppins',
                 ),
               ),
-            ],
-          ),
-          const SizedBox(width: 4),
-          const Icon(Icons.chevron_right_rounded,
-              size: 16, color: Color(0xFF94A3B8)),
-        ],
+            ),
+            const SizedBox(width: 8),
+            // Duration
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.access_time_rounded,
+                    size: 11, color: Colors.grey.shade400),
+                const SizedBox(width: 2),
+                Text(
+                  '${task.durationMinutes} mins',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey.shade500,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded,
+                size: 16, color: Color(0xFF94A3B8)),
+          ],
+        ),
       ),
     );
   }

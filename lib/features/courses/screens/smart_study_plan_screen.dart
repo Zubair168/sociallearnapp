@@ -1,30 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sociallearnapp/features/courses/screens/subject_topics_screen.dart';
+import 'package:sociallearnapp/features/progress/services/progress_storage_service.dart';
 import 'package:sociallearnapp/features/video/screens/video_player_screen.dart';
-
-class StudyTaskItem {
-  final String id;
-  final String title;
-  final String course;
-  final String type; // TYT or AYT
-  final int durationMinutes;
-  String note;
-  bool isCompleted;
-  final Color iconBg;
-  final IconData icon;
-
-  StudyTaskItem({
-    required this.id,
-    required this.title,
-    required this.course,
-    required this.type,
-    required this.durationMinutes,
-    this.note = '',
-    this.isCompleted = false,
-    this.iconBg = const Color(0xFFE0F2FE),
-    this.icon = Icons.calculate_outlined,
-  });
-}
 
 class SmartStudyPlanScreen extends StatefulWidget {
   const SmartStudyPlanScreen({super.key});
@@ -47,58 +25,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
     {'dayName': 'Mon', 'date': '3', 'dots': 3},
   ];
 
-  final List<StudyTaskItem> _tasks = [
-    StudyTaskItem(
-      id: '1',
-      title: 'Linear Equations',
-      course: 'Mathematics',
-      type: 'TYT',
-      durationMinutes: 60,
-      note: 'Complete this and revise it after 2 days. This is an example of a key note for exam prep.',
-      isCompleted: true,
-      icon: Icons.calculate_outlined,
-      iconBg: const Color(0xFFE0F2FE),
-    ),
-    StudyTaskItem(
-      id: '2',
-      title: 'Tanzimat Literature',
-      course: 'Turkish',
-      type: 'AYT',
-      durationMinutes: 30,
-      note: 'Complete this and revise it after 2 days',
-      isCompleted: false,
-      icon: Icons.auto_stories_outlined,
-      iconBg: const Color(0xFFFFE4E6),
-    ),
-    StudyTaskItem(
-      id: '3',
-      title: 'Polynomials',
-      course: 'Mathematics',
-      type: 'AYT',
-      durationMinutes: 45,
-      note: 'Focus on remainder theorem and roots.',
-      isCompleted: true,
-      icon: Icons.functions_rounded,
-      iconBg: const Color(0xFFE0F2FE),
-    ),
-    StudyTaskItem(
-      id: '4',
-      title: 'Electrostatics & Electric Fields',
-      course: 'Physics',
-      type: 'AYT',
-      durationMinutes: 60,
-      note: 'Solve 20 past ÖSYM questions.',
-      isCompleted: false,
-      icon: Icons.electric_bolt_rounded,
-      iconBg: const Color(0xFFFEF3C7),
-    ),
-  ];
-
   String _selectedTemplateCategory = 'All';
-
-  int get _completedCount => _tasks.where((t) => t.isCompleted).length;
-  int get _totalCount => _tasks.length;
-  int get _progressPct => _totalCount > 0 ? ((_completedCount / _totalCount) * 100).toInt() : 0;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +87,12 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
 
   // ─── Tab 1: My Plan View (Screenshots 6 & 7) ──────────────────────────────
   Widget _buildMyPlanView() {
+    final progress = context.watch<ProgressProvider>();
+    final tasks = progress.studyTasks;
+    final completedCount = progress.completedTasksCount;
+    final totalCount = progress.totalTasksCount;
+    final progressPct = progress.tasksProgressPct;
+
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -286,12 +219,12 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
         const SizedBox(height: 8),
 
         // Progress Text
-        if (_tasks.isNotEmpty) ...[
+        if (tasks.isNotEmpty) ...[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Tasks Completed  ($_completedCount/$_totalCount)',
+                'Tasks Completed  ($completedCount/$totalCount)',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey.shade600,
@@ -300,7 +233,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                 ),
               ),
               Text(
-                '$_progressPct%',
+                '$progressPct%',
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -314,10 +247,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
         ],
 
         // Tasks List or Empty State
-        if (_tasks.isEmpty)
+        if (tasks.isEmpty)
           _buildEmptyTasksState()
         else
-          ..._tasks.map((task) => _buildTaskCard(task)),
+          ...tasks.map((task) => _buildTaskCard(task)),
       ],
     );
   }
@@ -383,7 +316,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
     );
   }
 
-  Widget _buildTaskCard(StudyTaskItem task) {
+  Widget _buildTaskCard(StudyTaskRecord task) {
+    final iconData = IconData(task.iconCodePoint, fontFamily: 'MaterialIcons');
+    final iconBg = Color(task.iconBgColor);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -408,10 +344,10 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: task.iconBg,
+                    color: iconBg,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(task.icon, color: const Color(0xFF2A3BD4), size: 20),
+                  child: Icon(iconData, color: const Color(0xFF2A3BD4), size: 20),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -472,7 +408,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => setState(() => task.isCompleted = !task.isCompleted),
+                  onTap: () => context.read<ProgressProvider>().toggleStudyTask(task.id),
                   child: Container(
                     width: 24,
                     height: 24,
@@ -534,7 +470,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
     );
   }
 
-  void _editNoteDialog(StudyTaskItem task) {
+  void _editNoteDialog(StudyTaskRecord task) {
     final noteCtrl = TextEditingController(text: task.note);
     showDialog(
       context: context,
@@ -549,7 +485,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
           TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
-              setState(() => task.note = noteCtrl.text);
+              context.read<ProgressProvider>().updateStudyTaskNote(task.id, noteCtrl.text);
               Navigator.pop(ctx);
             },
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2A3BD4)),
@@ -561,7 +497,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
   }
 
   // ─── Modal: Topic Action Sheet (Screenshot 7) ──────────────────────────────
-  void _showTopicActionModal(StudyTaskItem task) {
+  void _showTopicActionModal(StudyTaskRecord task) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -904,13 +840,14 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
   }
 
   // ─── Add Task Screen Navigator (Screenshot 6 right) ────────────────────────
-  void _openAddTaskScreen(BuildContext context) async {
-    final newTask = await Navigator.push<StudyTaskItem>(
-      context,
+  void _openAddTaskScreen(BuildContext ctx) async {
+    final progress = ctx.read<ProgressProvider>();
+    final newTask = await Navigator.push<StudyTaskRecord>(
+      ctx,
       MaterialPageRoute(builder: (_) => const AddTaskScreen()),
     );
     if (newTask != null) {
-      setState(() => _tasks.add(newTask));
+      progress.addStudyTask(newTask);
     }
   }
 }
@@ -1103,14 +1040,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             child: ElevatedButton(
               onPressed: () {
                 final totalMins = _studyHours * 60 + _studyMinutes;
-                final newTask = StudyTaskItem(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                final newTask = StudyTaskRecord(
+                  id: 'task_${DateTime.now().millisecondsSinceEpoch}',
                   title: _selectedTopic,
                   course: _selectedCourse,
                   type: _taskType,
                   durationMinutes: totalMins > 0 ? totalMins : 30,
                   note: _noteCtrl.text,
                   isCompleted: false,
+                  iconBgColor: _taskType == 'TYT' ? 0xFFE0F2FE : 0xFFFFE4E6,
+                  iconCodePoint: _taskType == 'TYT' ? 0xe123 : 0xe3e3,
                 );
                 Navigator.pop(context, newTask);
               },

@@ -67,6 +67,58 @@ class SolvedTestRecord {
       SolvedTestRecord.fromMap(jsonDecode(source));
 }
 
+class StudyTaskRecord {
+  final String id;
+  final String title;
+  final String course;
+  final String type; // TYT or AYT
+  final int durationMinutes;
+  String note;
+  bool isCompleted;
+  final int iconBgColor;
+  final int iconCodePoint;
+
+  StudyTaskRecord({
+    required this.id,
+    required this.title,
+    required this.course,
+    required this.type,
+    required this.durationMinutes,
+    this.note = '',
+    this.isCompleted = false,
+    this.iconBgColor = 0xFFE0F2FE,
+    this.iconCodePoint = 0xe123,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'course': course,
+        'type': type,
+        'durationMinutes': durationMinutes,
+        'note': note,
+        'isCompleted': isCompleted,
+        'iconBgColor': iconBgColor,
+        'iconCodePoint': iconCodePoint,
+      };
+
+  factory StudyTaskRecord.fromMap(Map<String, dynamic> map) => StudyTaskRecord(
+        id: map['id'] ?? '',
+        title: map['title'] ?? '',
+        course: map['course'] ?? 'General',
+        type: map['type'] ?? 'TYT',
+        durationMinutes: map['durationMinutes'] ?? 30,
+        note: map['note'] ?? '',
+        isCompleted: map['isCompleted'] ?? false,
+        iconBgColor: map['iconBgColor'] ?? 0xFFE0F2FE,
+        iconCodePoint: map['iconCodePoint'] ?? 0xe123,
+      );
+
+  String toJson() => jsonEncode(toMap());
+  factory StudyTaskRecord.fromJson(String source) =>
+      StudyTaskRecord.fromMap(jsonDecode(source));
+}
+
 class ProgressStorageService {
   static const String _kWatchedVideosKey = 'progress_watched_videos';
   static const String _kSolvedCountKey = 'progress_solved_count';
@@ -77,6 +129,7 @@ class ProgressStorageService {
   static const String _kStreakDaysKey = 'progress_streak_days';
   static const String _kLastSolvedDateKey = 'progress_last_solved_date';
   static const String _kSolvedTestsKey = 'progress_solved_tests_list';
+  static const String _kStudyTasksKey = 'progress_study_tasks_list';
 
   // ── Save / Toggle Watched Video ───────────────────────────────────────────
   static Future<bool> toggleVideoWatched(String videoId) async {
@@ -270,6 +323,100 @@ class ProgressStorageService {
     await prefs.remove(_kStreakDaysKey);
     await prefs.remove(_kLastSolvedDateKey);
     await prefs.remove(_kSolvedTestsKey);
+    await prefs.remove(_kStudyTasksKey);
+  }
+
+  // ── Study Plan Tasks Persistent Storage ─────────────────────────────────────
+  static Future<List<StudyTaskRecord>> getStudyTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rawList = prefs.getStringList(_kStudyTasksKey);
+    if (rawList == null || rawList.isEmpty) {
+      final initialTasks = [
+        StudyTaskRecord(
+          id: 'task_1',
+          title: 'Linear Equations',
+          course: 'Mathematics',
+          type: 'TYT',
+          durationMinutes: 60,
+          note: 'Complete this and revise it after 2 days. This is an example of a key note for exam prep.',
+          isCompleted: true,
+          iconBgColor: 0xFFE0F2FE,
+          iconCodePoint: 0xe123,
+        ),
+        StudyTaskRecord(
+          id: 'task_2',
+          title: 'World Literature & Poetry',
+          course: 'Literature',
+          type: 'AYT',
+          durationMinutes: 30,
+          note: 'Complete this and revise key periods after 2 days.',
+          isCompleted: false,
+          iconBgColor: 0xFFFFE4E6,
+          iconCodePoint: 0xe3e3,
+        ),
+        StudyTaskRecord(
+          id: 'task_3',
+          title: 'Polynomials & Functions',
+          course: 'Mathematics',
+          type: 'AYT',
+          durationMinutes: 45,
+          note: 'Focus on remainder theorem and root factorization.',
+          isCompleted: true,
+          iconBgColor: 0xFFE0F2FE,
+          iconCodePoint: 0xe2c6,
+        ),
+        StudyTaskRecord(
+          id: 'task_4',
+          title: 'Electrostatics & Electric Fields',
+          course: 'Physics',
+          type: 'AYT',
+          durationMinutes: 60,
+          note: 'Solve 20 past official exam questions.',
+          isCompleted: false,
+          iconBgColor: 0xFFFEF3C7,
+          iconCodePoint: 0xe231,
+        ),
+      ];
+      await saveStudyTasks(initialTasks);
+      return initialTasks;
+    }
+    return rawList.map((str) => StudyTaskRecord.fromJson(str)).toList();
+  }
+
+  static Future<void> saveStudyTasks(List<StudyTaskRecord> tasks) async {
+    final prefs = await SharedPreferences.getInstance();
+    final strList = tasks.map((t) => t.toJson()).toList();
+    await prefs.setStringList(_kStudyTasksKey, strList);
+  }
+
+  static Future<void> addStudyTask(StudyTaskRecord task) async {
+    final current = await getStudyTasks();
+    current.add(task);
+    await saveStudyTasks(current);
+  }
+
+  static Future<void> toggleStudyTask(String id) async {
+    final current = await getStudyTasks();
+    final idx = current.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      current[idx].isCompleted = !current[idx].isCompleted;
+      await saveStudyTasks(current);
+    }
+  }
+
+  static Future<void> updateStudyTaskNote(String id, String note) async {
+    final current = await getStudyTasks();
+    final idx = current.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      current[idx].note = note;
+      await saveStudyTasks(current);
+    }
+  }
+
+  static Future<void> deleteStudyTask(String id) async {
+    final current = await getStudyTasks();
+    current.removeWhere((t) => t.id == id);
+    await saveStudyTasks(current);
   }
 }
 
@@ -283,6 +430,7 @@ class ProgressProvider extends ChangeNotifier {
   int _streak = 5;
   Set<String> _watchedVideos = {'v2', 'v3', 'v4', 'v6', 'v7'};
   List<SolvedTestRecord> _solvedTests = [];
+  List<StudyTaskRecord> _studyTasks = [];
 
   int get solved => _solved;
   int get correct => _correct;
@@ -293,6 +441,15 @@ class ProgressProvider extends ChangeNotifier {
   int get streak => _streak;
   Set<String> get watchedVideos => _watchedVideos;
   List<SolvedTestRecord> get solvedTests => _solvedTests;
+  List<StudyTaskRecord> get studyTasks => _studyTasks;
+
+  int get completedTasksCount => _studyTasks.where((t) => t.isCompleted).length;
+  int get totalTasksCount => _studyTasks.length;
+  int get remainingTasksCount => _studyTasks.where((t) => !t.isCompleted).length;
+  double get tasksProgress =>
+      totalTasksCount > 0 ? completedTasksCount / totalTasksCount : 0.0;
+  int get tasksProgressPct =>
+      totalTasksCount > 0 ? ((completedTasksCount / totalTasksCount) * 100).toInt() : 0;
 
   ProgressProvider() {
     loadProgress();
@@ -313,7 +470,38 @@ class ProgressProvider extends ChangeNotifier {
     }
 
     _solvedTests = await ProgressStorageService.getSolvedTestRecords();
+    _studyTasks = await ProgressStorageService.getStudyTasks();
     notifyListeners();
+  }
+
+  Future<void> toggleStudyTask(String id) async {
+    final idx = _studyTasks.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      _studyTasks[idx].isCompleted = !_studyTasks[idx].isCompleted;
+      notifyListeners();
+      await ProgressStorageService.saveStudyTasks(_studyTasks);
+    }
+  }
+
+  Future<void> addStudyTask(StudyTaskRecord task) async {
+    _studyTasks.add(task);
+    notifyListeners();
+    await ProgressStorageService.saveStudyTasks(_studyTasks);
+  }
+
+  Future<void> updateStudyTaskNote(String id, String note) async {
+    final idx = _studyTasks.indexWhere((t) => t.id == id);
+    if (idx != -1) {
+      _studyTasks[idx].note = note;
+      notifyListeners();
+      await ProgressStorageService.saveStudyTasks(_studyTasks);
+    }
+  }
+
+  Future<void> deleteStudyTask(String id) async {
+    _studyTasks.removeWhere((t) => t.id == id);
+    notifyListeners();
+    await ProgressStorageService.saveStudyTasks(_studyTasks);
   }
 
   Future<void> toggleWatched(String videoId) async {
@@ -387,6 +575,7 @@ class ProgressProvider extends ChangeNotifier {
     _dailySolved = 0;
     _watchedVideos.clear();
     _solvedTests.clear();
+    _studyTasks = await ProgressStorageService.getStudyTasks();
     notifyListeners();
   }
 }
