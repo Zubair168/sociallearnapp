@@ -64,94 +64,94 @@ class CourseService {
     final batch = _db.batch();
     final courses = [
       {
-        'title': 'Flutter Masterclass 2024',
-        'instructor': 'John Martinez',
+        'title': 'TYT Mathematics: Complete Problem Solving & Equations',
+        'instructor': 'Prof. Ahmet Yılmaz',
         'thumbnail':
-            'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
+            'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=800',
         'description':
-            'Master Flutter from scratch to advanced. Build stunning cross-platform apps with Firebase, state management, animations and much more.',
+            'Comprehensive TYT Mathematics curriculum covering Linear Equations, Quadratic Systems, Polynomials, and high-yield problem solving strategies.',
         'videoUrl':
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
         'duration': '12h 30m',
-        'rating': 4.8,
-        'enrolledCount': 3240,
-        'category': 'Mobile Dev',
+        'rating': 4.9,
+        'enrolledCount': 8420,
+        'category': 'TYT',
         'lessons': 48,
       },
       {
-        'title': 'Firebase for Flutter Developers',
-        'instructor': 'Sarah Chen',
+        'title': 'AYT Advanced Mathematics: Functions, Derivatives & Integrals',
+        'instructor': 'Prof. Ahmet Yılmaz',
         'thumbnail':
-            'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800',
+            'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800',
         'description':
-            'Learn Firebase Auth, Firestore, Storage, Cloud Functions and more. Build production-ready apps with the full Firebase suite.',
+            'Master advanced functions, limits, continuity, derivative applications, and definite integration for AYT success.',
+        'videoUrl':
+            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'duration': '16h 20m',
+        'rating': 4.95,
+        'enrolledCount': 6180,
+        'category': 'AYT',
+        'lessons': 54,
+      },
+      {
+        'title': 'TYT-AYT Physics: Mechanics, Optics & Thermodynamics',
+        'instructor': 'Dr. Zeynep Kaya',
+        'thumbnail':
+            'https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?w=800',
+        'description':
+            'Detailed conceptual physics with ÖSYM question analysis, visual experiments, and formula shortcuts.',
+        'videoUrl':
+            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        'duration': '10h 15m',
+        'rating': 4.85,
+        'enrolledCount': 5290,
+        'category': 'TYT',
+        'lessons': 36,
+      },
+      {
+        'title': 'TYT Turkish: Grammar Mastery & Reading Comprehension',
+        'instructor': 'Mehmet Demir',
+        'thumbnail':
+            'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800',
+        'description':
+            'Speed reading techniques, paragraph tactics, spelling rules, and punctuation questions to maximize TYT Turkish net score.',
         'videoUrl':
             'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-        'duration': '8h 15m',
+        'duration': '8h 45m',
+        'rating': 4.8,
+        'enrolledCount': 7890,
+        'category': 'TYT',
+        'lessons': 30,
+      },
+      {
+        'title': 'TYT-AYT Chemistry: Organic & Modern Chemistry',
+        'instructor': 'Dr. Elif Arslan',
+        'thumbnail':
+            'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800',
+        'description':
+            'Chemical equilibria, electrochemistry, and organic chemistry reaction mechanisms with step-by-step solutions.',
+        'videoUrl':
+            'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+        'duration': '9h 10m',
+        'rating': 4.75,
+        'enrolledCount': 4120,
+        'category': 'AYT',
+        'lessons': 28,
+      },
+      {
+        'title': 'TYT-AYT Biology: Genetics, Ecology & Human Systems',
+        'instructor': 'Dr. Canan Yıldız',
+        'thumbnail':
+            'https://images.unsplash.com/photo-1530210124550-912dc1381cb8?w=800',
+        'description':
+            'High-yield biology concept maps, endocrine system, nervous system, and Mendel genetics.',
+        'videoUrl':
+            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+        'duration': '11h 00m',
         'rating': 4.9,
-        'enrolledCount': 2180,
-        'category': 'Backend',
-        'lessons': 32,
-      },
-      {
-        'title': 'UI/UX Design Fundamentals',
-        'instructor': 'Priya Sharma',
-        'thumbnail':
-            'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800',
-        'description':
-            'Learn design principles, color theory, typography, and how to create beautiful user interfaces using Figma and Flutter.',
-        'videoUrl':
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-        'duration': '6h 45m',
-        'rating': 4.7,
-        'enrolledCount': 1890,
-        'category': 'Design',
-        'lessons': 26,
-      },
-      {
-        'title': 'Python for Data Science',
-        'instructor': 'Alex Johnson',
-        'thumbnail':
-            'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800',
-        'description':
-            'Complete Python course for data science. Pandas, NumPy, Matplotlib, Scikit-Learn and machine learning fundamentals.',
-        'videoUrl':
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-        'duration': '15h 20m',
-        'rating': 4.6,
-        'enrolledCount': 4560,
-        'category': 'Data Science',
-        'lessons': 60,
-      },
-      {
-        'title': 'React Native Zero to Hero',
-        'instructor': 'David Kim',
-        'thumbnail':
-            'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?w=800',
-        'description':
-            'Build cross-platform mobile apps with React Native. Redux, Navigation, Native modules, and publishing to App Store.',
-        'videoUrl':
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-        'duration': '10h 00m',
-        'rating': 4.5,
-        'enrolledCount': 2900,
-        'category': 'Mobile Dev',
-        'lessons': 40,
-      },
-      {
-        'title': 'Machine Learning with TensorFlow',
-        'instructor': 'Fatima Al-Rashid',
-        'thumbnail':
-            'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800',
-        'description':
-            'Deep learning, neural networks, CNNs, RNNs and deployment. Real-world ML projects from image classification to NLP.',
-        'videoUrl':
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
-        'duration': '18h 45m',
-        'rating': 4.9,
-        'enrolledCount': 5200,
-        'category': 'AI/ML',
-        'lessons': 72,
+        'enrolledCount': 5600,
+        'category': 'TYT',
+        'lessons': 42,
       },
     ];
 

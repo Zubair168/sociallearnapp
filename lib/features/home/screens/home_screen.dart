@@ -572,7 +572,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         btnText: 'Buy Coaching Package',
-                        onTap: () {},
+                        onTap: _showCoachingModal,
                       ),
                       const SizedBox(height: 12),
 
@@ -603,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         btnText: 'Calculate Rank',
-                        onTap: () {},
+                        onTap: _showRankCalculatorModal,
                       ),
                       const SizedBox(height: 12),
 
@@ -622,7 +622,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'No Lectures Watched',
+                              '5 Lectures Watched',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
@@ -639,9 +639,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (_) => const VideoPlayerScreen(
-                                title: 'Introductory Lecture',
+                                title: 'Word Problems with Linear Equations-1',
                                 videoUrl:
-                                    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+                                    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+                                category: 'Starter',
                               ),
                             ),
                           );
@@ -671,7 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'No Templates Found',
+                              '3 Active Templates',
                               style: TextStyle(
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w600,
@@ -683,7 +684,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         btnText: 'View Study Templates',
-                        onTap: () {},
+                        onTap: _showStudyTemplatesModal,
                       ),
                       const SizedBox(height: 12),
 
@@ -702,7 +703,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 8),
                             const Text(
-                              'No Preference List Found',
+                              'Boğaziçi University',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -715,8 +716,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 4),
                           ],
                         ),
-                        btnText: 'Create Preference List',
-                        onTap: () {},
+                        btnText: 'Target Preference List',
+                        onTap: _showPreferenceListModal,
                       ),
                       const SizedBox(height: 12),
 
@@ -2434,6 +2435,579 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 14,
                   ),
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCoachingModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Exam Coaching & Mentorship',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '1-on-1 guidance with Top 1,000 YKS rankers and experienced teachers.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 16),
+            _coachingPackageTile(
+              'Sprint Package',
+              'Weekly 1-on-1 strategy meeting + Daily question plan',
+              '₺450 / mo',
+              const Color(0xFF22C55E),
+            ),
+            const SizedBox(height: 10),
+            _coachingPackageTile(
+              'Mastery Package',
+              '3x weekly meetings + 24/7 WhatsApp question solver + Live trial exam analysis',
+              '₺850 / mo',
+              const Color(0xFF2A3BD4),
+              isRecommended: true,
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Coaching consultation request submitted!'),
+                      backgroundColor: const Color(0xFF2A3BD4),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2A3BD4),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Book Free 15-min Consultation',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _coachingPackageTile(
+      String title, String desc, String price, Color color,
+      {bool isRecommended = false}) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: isRecommended ? const Color(0xFFEFF4FF) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isRecommended ? const Color(0xFF2A3BD4) : const Color(0xFFE2E8F0),
+          width: isRecommended ? 1.5 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1E293B),
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
+                    if (isRecommended) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 1.5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2A3BD4),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'BEST VALUE',
+                          style: TextStyle(
+                            fontSize: 8.5,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.grey.shade600,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            price,
+            style: TextStyle(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w700,
+              color: color,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRankCalculatorModal() {
+    double tytNet = 85.5;
+    double aytNet = 62.0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          final score = (tytNet * 2.5) + (aytNet * 4.0) + 60.0;
+          final estimatedRank = (500000 / (score / 100)).toInt().clamp(1200, 450000);
+
+          return Container(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'YKS Projected Rank Calculator',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Based on latest ÖSYM coefficients and score standard deviations.',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: Colors.grey.shade600,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Calculated Result Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF4FF),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFF93C5FD)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          const Text(
+                            'Estimated Score',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF64748B),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          Text(
+                            score.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF2A3BD4),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(width: 1, height: 32, color: const Color(0xFFCBD5E1)),
+                      Column(
+                        children: [
+                          const Text(
+                            'Projected Ranking',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF64748B),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          Text(
+                            '#$estimatedRank',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF16A34A),
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('TYT Net Score: ${tytNet.toStringAsFixed(1)} / 120',
+                        style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins')),
+                  ],
+                ),
+                Slider(
+                  value: tytNet,
+                  min: 0,
+                  max: 120,
+                  divisions: 120,
+                  activeColor: const Color(0xFF2A3BD4),
+                  onChanged: (val) => setModalState(() => tytNet = val),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('AYT Net Score: ${aytNet.toStringAsFixed(1)} / 80',
+                        style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins')),
+                  ],
+                ),
+                Slider(
+                  value: aytNet,
+                  min: 0,
+                  max: 80,
+                  divisions: 80,
+                  activeColor: const Color(0xFF16A34A),
+                  onChanged: (val) => setModalState(() => aytNet = val),
+                ),
+
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2A3BD4),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      elevation: 0,
+                    ),
+                    child: const Text('Save to My Profile',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Poppins')),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showStudyTemplatesModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'High-Yield Study Templates',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Pre-built revision schedules structured by target score.',
+              style: TextStyle(
+                fontSize: 11.5,
+                color: Colors.grey.shade600,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 14),
+            _studyTemplateItem('90-Day TYT Foundation Sprint', 'Daily 60 Qs • Math & Turkish focus', 'Active', const Color(0xFF16A34A)),
+            const SizedBox(height: 8),
+            _studyTemplateItem('AYT STEM Mastery Schedule', 'Daily 80 Qs • Physics & Advanced Calc', 'Popular', const Color(0xFF2A3BD4)),
+            const SizedBox(height: 8),
+            _studyTemplateItem('Weekend Full Trial Exam Simulator', '2 TYT + 2 AYT complete runs per week', 'Intense', const Color(0xFFEF4444)),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2A3BD4),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+                child: const Text('Apply Selected Schedule',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontFamily: 'Poppins')),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _studyTemplateItem(String title, String desc, String tag, Color tagColor) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: tagColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.menu_book_rounded, color: tagColor, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(title, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      decoration: BoxDecoration(color: tagColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(4)),
+                      child: Text(tag, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: tagColor, fontFamily: 'Poppins')),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(desc, style: TextStyle(fontSize: 10.5, color: Colors.grey.shade500, fontFamily: 'Poppins')),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPreferenceListModal() {
+    final List<Map<String, String>> prefs = [
+      {'uni': 'Boğaziçi University', 'dept': 'Computer Engineering (English)', 'rank': 'Top 450', 'quota': '75'},
+      {'uni': 'Middle East Technical University (ODTÜ)', 'dept': 'Electrical & Electronics Eng.', 'rank': 'Top 1,200', 'quota': '120'},
+      {'uni': 'Istanbul Technical University (ITU)', 'dept': 'Artificial Intelligence & Data Eng.', 'rank': 'Top 2,100', 'quota': '60'},
+      {'uni': 'Bilkent University', 'dept': 'Industrial Engineering (Full Schol.)', 'rank': 'Top 850', 'quota': '30'},
+      {'uni': 'Koç University', 'dept': 'Faculty of Medicine (Full Schol.)', 'rank': 'Top 120', 'quota': '20'},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE2E8F0),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Target University Preferences',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Your target departments and past YKS baseline cutoff percentiles.',
+              style: TextStyle(
+                fontSize: 11.5,
+                color: Colors.grey.shade600,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            const SizedBox(height: 14),
+            Expanded(
+              child: ListView.separated(
+                itemCount: prefs.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 8),
+                itemBuilder: (context, i) {
+                  final p = prefs[i];
+                  return Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: i == 0 ? const Color(0xFFEFF4FF) : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: i == 0 ? const Color(0xFF2A3BD4) : const Color(0xFFE2E8F0)),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(0xFF2A3BD4).withValues(alpha: 0.1),
+                          child: Text('${i + 1}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF2A3BD4), fontFamily: 'Poppins')),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(p['uni']!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF1E293B), fontFamily: 'Poppins')),
+                              Text(p['dept']!, style: TextStyle(fontSize: 10.5, color: Colors.grey.shade600, fontFamily: 'Poppins')),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(color: const Color(0xFFDCFCE7), borderRadius: BorderRadius.circular(4)),
+                          child: Text(p['rank']!, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: Color(0xFF16A34A), fontFamily: 'Poppins')),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ],

@@ -10,11 +10,11 @@ class CourseProvider extends ChangeNotifier {
 
   final List<String> _categories = [
     'All',
-    'Mobile Dev',
-    'Backend',
-    'Design',
-    'Data Science',
-    'AI/ML',
+    'TYT',
+    'AYT',
+    'Mathematics',
+    'Science',
+    'Turkish',
   ];
   List<String> get categories => _categories;
 
