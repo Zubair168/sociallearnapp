@@ -336,7 +336,7 @@ class _SmartStudyPlanScreenState extends State<SmartStudyPlanScreen> {
         ? const Color(0xFF86EFAC)
         : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0));
 
-    final iconData = IconData(task.iconCodePoint, fontFamily: 'MaterialIcons');
+    final iconData = task.icon;
     final iconBg = Color(task.iconBgColor);
 
     return Container(

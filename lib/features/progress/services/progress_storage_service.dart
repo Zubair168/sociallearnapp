@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SolvedTestRecord {
@@ -89,6 +89,31 @@ class StudyTaskRecord {
     this.iconBgColor = 0xFFE0F2FE,
     this.iconCodePoint = 0xe123,
   });
+
+  IconData get icon {
+    switch (course.toLowerCase()) {
+      case 'mathematics':
+      case 'math':
+        return Icons.functions_rounded;
+      case 'physics':
+        return Icons.bolt_rounded;
+      case 'chemistry':
+        return Icons.science_rounded;
+      case 'biology':
+        return Icons.biotech_rounded;
+      case 'literature':
+      case 'turkish':
+        return Icons.menu_book_rounded;
+      case 'history':
+        return Icons.history_edu_rounded;
+      case 'geography':
+        return Icons.public_rounded;
+      case 'philosophy':
+        return Icons.psychology_rounded;
+      default:
+        return Icons.assignment_outlined;
+    }
+  }
 
   Map<String, dynamic> toMap() => {
         'id': id,

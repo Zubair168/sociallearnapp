@@ -2395,7 +2395,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleColor = isDark ? Colors.white : const Color(0xFF1E293B);
 
-    final iconData = IconData(task.iconCodePoint, fontFamily: 'MaterialIcons');
+    final iconData = task.icon;
     final iconBg = Color(task.iconBgColor);
     final iconColor = task.type == 'TYT' ? const Color(0xFF0284C7) : const Color(0xFFEA580C);
     final tierBg = task.type == 'TYT' ? const Color(0xFFEEF2FF) : const Color(0xFFFFF7ED);
