@@ -98,56 +98,51 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppColors.primary,
       body: SafeArea(
         bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      // ── Top Blue Header — exact match Figma Frame 257 ─────────────────
-                      Expanded(
-                        flex: 4,
-                        child: _buildHeader(),
-                      ),
+        child: Column(
+          children: [
+            // ── Top Blue Header — exact match Figma Frame 257 ─────────────────
+            SizedBox(
+              height: 220,
+              child: _buildHeader(),
+            ),
 
-                      // ── Bottom Form Container ──────────────────────────────────
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: cardBg,
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                        ),
-                        padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Title + Support chip
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w800,
-                                          color: Color(0xFF2A3BD4),
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                      const SizedBox(height: 3),
-                                      Text(
-                                        'Login to continue using the app',
-                                        style: TextStyle(
+            // ── Bottom Form Container ──────────────────────────────────
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                ),
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title + Support chip
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF2A3BD4),
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  'Login to continue using the app',
+                                  style: TextStyle(
                                           fontSize: 12.5,
                                           color: isDark ? const Color(0xFF94A3B8) : Colors.grey.shade500,
                                           fontFamily: 'Poppins',
@@ -397,24 +392,23 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            );
-          },
-        ),
-      ),
-    );
-  }
+            ),
+          );
+        }
 
   // ─── Exact Figma Frame 257 Header ─────────────────────────────────────────
 
   Widget _buildHeader() {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final headerHeight = constraints.maxHeight;
-        final charHeight = (headerHeight * 0.85).clamp(160.0, 240.0);
+        final headerHeight = constraints.maxHeight.isFinite && constraints.maxHeight > 0
+            ? constraints.maxHeight
+            : 220.0;
+        final charHeight = (headerHeight * 0.85).clamp(140.0, 240.0);
 
         return Container(
           width: double.infinity,

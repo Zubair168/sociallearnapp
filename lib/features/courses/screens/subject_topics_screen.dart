@@ -449,15 +449,18 @@ class _SubjectTopicsScreenState extends State<SubjectTopicsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      topic.title,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w700,
-                        color: textPrimary,
-                        fontFamily: 'Poppins',
+                    Expanded(
+                      child: Text(
+                        topic.title,
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: textPrimary,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     const Icon(
                       Icons.chevron_right_rounded,
                       color: Color(0xFF94A3B8),
